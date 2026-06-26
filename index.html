@@ -158,6 +158,10 @@
   .planchk::after{content:"";width:9px;height:9px;border-radius:50%}
   .planchk.a::after{background:var(--ink)}
   .planchk.b::after{background:#fff;border:1.5px solid var(--line-strong)}
+  .planchk.t::after{display:none}
+  .ptag{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;border:1px solid var(--line-strong);color:var(--ink-soft);white-space:nowrap}
+  .ptag.hotel{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ptag.casa{background:#fff;color:var(--ink)}
   .hb-empty{background:var(--card);border:1px dashed var(--line-strong);border-radius:11px;padding:18px;text-align:center;color:var(--ink-soft);font-size:14px}
   .hb-weights{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
   @media(max-width:760px){.hb-weights{grid-template-columns:1fr 1fr}}
@@ -258,7 +262,7 @@
   <div class="wrap">
     <div class="eyebrow">Mapa de planificación</div>
     <h2>Lugares, zonas para quedarse y transporte</h2>
-    <p class="lede">Las <strong>burbujas</strong> son zonas candidatas para hospedarse, ahora divididas en <strong>Plan A</strong> y <strong>Plan B</strong> según dónde se concentran las mejores opciones. La capa <strong>Hospedaje</strong> muestra los candidatos reales de Booking (con enlace). Cuadrados = transporte; puntos sólidos = lugares a visitar. Cambia de base para acercar el mapa.</p>
+    <p class="lede">Las <strong>burbujas</strong> son zonas candidatas para hospedarse, divididas en <strong>Plan A</strong> y <strong>Plan B</strong> según dónde se concentran las mejores opciones. Los pines de <strong>hospedaje</strong> son candidatos reales de <strong>Expedia</strong> (★ hotel · ⌂ casa, con enlace). Usa los checkboxes <strong>Plan A/B</strong> y <strong>Hotel/Casa</strong> para filtrar. Cuadrados = transporte; puntos sólidos = lugares a visitar. Cambia de base para acercar el mapa.</p>
     <div class="map-toolbar">
       <div class="base-switch" role="tablist" aria-label="Seleccionar base">
         <button data-base="general" class="active" role="tab">Vista general</button>
@@ -271,6 +275,8 @@
         <label><input type="checkbox" id="ly-routes" checked> Rutas</label>
         <label class="ly-plan a"><input type="checkbox" id="ly-plana" checked> Plan A</label>
         <label class="ly-plan b"><input type="checkbox" id="ly-planb" checked> Plan B</label>
+        <label class="ly-type"><input type="checkbox" id="ly-hotel" checked> ★ Hotel</label>
+        <label class="ly-type"><input type="checkbox" id="ly-casa" checked> ⌂ Casa</label>
       </div>
     </div>
     <div id="map"></div>
@@ -278,7 +284,7 @@
       <span class="lg"><span class="pin sight"></span> Lugar a visitar</span>
       <span class="lg"><span class="pin transport"></span> Transporte (tren · metro · aeropuerto)</span>
       <span class="lg"><span class="pin zone"></span> Zona Plan A (sólida) / Plan B (punteada)</span>
-      <span class="lg"><span class="pin lodge"></span> Hospedaje candidato — filtra con Plan A / Plan B arriba</span>
+      <span class="lg"><span class="pin lodge"></span> Hospedaje Expedia · ★ hotel / ⌂ casa — filtra arriba</span>
     </div>
   </div>
 </section>
@@ -323,7 +329,7 @@
   <div class="wrap">
     <div class="eyebrow">Hospedaje óptimo</div>
     <h2>Matriz de decisión · ajusta los pesos</h2>
-    <p class="lede">Ranking de candidatos reales de Booking (9+/10 ≈ 4.5★, 6 personas, fin de sep 2026) según tus cinco criterios. Mueve los pesos y el ranking se recalcula en vivo para iterar.</p>
+    <p class="lede">Ranking de candidatos reales de <strong>Expedia</strong> (precios totales, 6 personas, fin de sep 2026) según tus cinco criterios. Filtra por <strong>Plan A/B</strong> y <strong>Hotel/Casa</strong> (sincronizado con el mapa), mueve los pesos y el ranking se recalcula en vivo.</p>
 
     <div class="hb-bar">
       <div class="base-switch" role="tablist" aria-label="Base de hospedaje">
@@ -333,6 +339,8 @@
       <div class="hb-planfilter">
         <label class="planchk a"><input type="checkbox" id="hb-plana" checked> Plan A</label>
         <label class="planchk b"><input type="checkbox" id="hb-planb" checked> Plan B</label>
+        <label class="planchk t"><input type="checkbox" id="hb-hotel" checked> ★ Hotel</label>
+        <label class="planchk t"><input type="checkbox" id="hb-casa" checked> ⌂ Casa</label>
       </div>
       <button id="hb-reset" class="hb-reset">↺ Pesos por defecto</button>
     </div>
@@ -348,11 +356,11 @@
     <div class="hb-table" id="hb-table"></div>
 
     <div class="hb-scenarios">
-      <div class="scen"><div class="sh">Premium · experiencia máx.</div><div class="sc">Rome Aparts + Romitorio di Serelle</div><div class="sp mono">~$791 / pers</div></div>
-      <div class="scen best"><div class="sh">Balanceado · recomendado</div><div class="sc">La Cupola + Villa Mucellena</div><div class="sp mono">~$472 / pers</div></div>
-      <div class="scen"><div class="sh">Valor</div><div class="sc">Tra i Musei + Villetta (Colle)</div><div class="sp mono">~$332 / pers</div></div>
+      <div class="scen"><div class="sh">Premium · hoteles</div><div class="sc">Trianon Borgo Pio + Villa Scacciapensieri</div><div class="sp mono">~$1,413 / pers</div></div>
+      <div class="scen best"><div class="sh">Balanceado · recomendado</div><div class="sc">St. Peter mirror + Podere il Pino</div><div class="sp mono">~$623 / pers</div></div>
+      <div class="scen"><div class="sh">Valor · casas</div><div class="sc">Casa Ripetta + Lilla</div><div class="sp mono">~$493 / pers</div></div>
     </div>
-    <p class="disclaimer"><strong>Metodología.</strong> Cada criterio se normaliza (min–max) dentro de cada base y se pondera con los pesos de arriba. <em>Cercanía</em> = distancia a los lugares de los días (al Vaticano en Roma; promedio a Florencia/Siena/San Gim./Pisa/Lucca/Val d'Orcia en Toscana). <em>Transporte</em> = al metro Línea A (Roma) o a la estación de Siena (Toscana). <em>Experiencia</em> combina amenidades (ascensor, accesibilidad, A/C, piscina, facilidades para bebé) y valor. Verifica 3 habitaciones reales, A/C y planta baja antes de reservar.</p>
+    <p class="disclaimer"><strong>Metodología.</strong> Cada criterio se normaliza (min–max) dentro de cada base y se pondera con los pesos de arriba. <em>Cercanía</em> = distancia a los lugares de los días (al Vaticano en Roma; promedio a Florencia/Siena/San Gim./Pisa/Lucca/Val d'Orcia en Toscana). <em>Transporte</em> = al metro Línea A (Roma) o a la estación de Siena (Toscana). <em>Experiencia</em> combina servicios/espacio (hotel = recepción y limpieza diaria; casa = cocina y habitaciones separadas, ideal con bebé) y valor. Precios y reseñas vía Expedia; en Prati hay pocos hoteles (Trianon destaca) y en la Toscana las mejores opciones familiares son agriturismi y borghi. Verifica 3 habitaciones reales, A/C y planta baja antes de reservar.</p>
   </div>
 </section>
 
@@ -572,15 +580,9 @@ const places={
    {n:"Roma Termini",c:[41.9009,12.5021],g:"▦",m:"Estación central",t:"Leonardo Express a FCO"},
    {n:"Aeropuerto FCO",c:C.fco,g:"✈",m:"Llegada / salida",t:"~45 min a Prati"}],
   zones:[
-   {n:"Plan A · Prati–Vaticano",c:[41.9068,12.4596],r:520,rec:true,m:"Plan A · junto al Vaticano",t:"Cluster pegado a San Pedro y Castel, a pasos del metro Ottaviano. Aquí: Rome Aparts, La Cupola, Suite Sarandrea, Home Domus."},
-   {n:"Plan B · Prati–Museos",c:[41.9063,12.4485],r:520,rec:false,m:"Plan B · lado Museos/Metro",t:"Lado oeste, junto a la entrada de los Museos Vaticanos y metros Ottaviano/Cipro. Algo más económico: Tra i Musei, My Vatican Place."}],
-  lodging:[
-   {n:"Rome Aparts",lbl:"Rome Aparts",c:[41.906625,12.458409],plan:"A",rating:9.6,reviews:747,pp:409,url:"https://www.booking.com/hotel/it/s-peter-big-apart-in-front-of-dome.html"},
-   {n:"Suite Sarandrea",lbl:"Suite Sarandrea",c:[41.90505,12.46017],plan:"A",rating:9.5,reviews:116,pp:267,url:"https://www.booking.com/hotel/it/suite-sarandrea.html"},
-   {n:"Home Domus Giulio Cesare",lbl:"Home Domus",c:[41.909212,12.458293],plan:"A",rating:9.0,reviews:141,pp:167,url:"https://www.booking.com/hotel/it/home-domus-giulio-cesare-vatican-museum.html"},
-   {n:"La Cupola Apartment",lbl:"La Cupola",c:[41.906774,12.4575],plan:"A",rating:9.4,reviews:103,pp:248,url:"https://www.booking.com/hotel/it/la-cupola-apartment-roma.html"},
-   {n:"Tra i Musei Vaticani",lbl:"Tra i Musei",c:[41.907298,12.452497],plan:"B",rating:9.4,reviews:33,pp:164,url:"https://www.booking.com/hotel/it/vatican-city-apartment-roma2.html"},
-   {n:"My Vatican Place",lbl:"My Vatican Pl.",c:[41.905109,12.444102],plan:"B",rating:9.1,reviews:295,pp:226,url:"https://www.booking.com/hotel/it/matteos-vatican-place.html"}]},
+   {n:"Plan A · Prati–Vaticano",c:[41.9068,12.4585],r:540,rec:true,m:"Plan A · junto al Vaticano",t:"Pegado a San Pedro y Castel, a pasos del metro Ottaviano. Aquí: Guest Art, St. Peter mirror, Elegant 3BR y el hotel Trianon Borgo Pio."},
+   {n:"Plan B · Prati–Lepanto",c:[41.9101,12.4720],r:520,rec:false,m:"Plan B · norte/Lepanto",t:"Prati alto, residencial y tranquilo, junto al metro Lepanto. Aquí: Prati 3BDR y Casa Ripetta."}],
+  lodging:[]},
  toscana:{center:[43.40,11.45],zoom:9,
   sights:[
    {n:"Siena",c:C.siena,m:"Día 10",t:"~30 min desde la base"},
@@ -601,15 +603,9 @@ const places={
    {n:"Firenze S.M.N.",c:C.firenzeSMN,g:"▦",m:"Estación de Florencia",t:"Llegada al centro"},
    {n:"Chiusi–Chianciano",c:[43.0758,11.9513],g:"▦",m:"Línea Roma–Florencia",t:"Útil para el sur"}],
   zones:[
-   {n:"Plan A · Val d'Elsa",c:[43.46,11.19],r:11000,rec:true,m:"Plan A · corredor Florencia–Siena",t:"Barberino, Poggibonsi y Colle di Val d'Elsa, sobre la superstrada SI-FI. Óptimo para Florencia, San Gimignano y Pisa. Aquí: Romitorio di Serelle, Casale di Villore, Cipresseta, Villetta."},
-   {n:"Plan B · Casole–Sovicille",c:[43.31,11.16],r:10500,rec:false,m:"Plan B · más cerca de Siena",t:"Casole d'Elsa y Sovicille, al sur: más cerca de Siena y la Val d'Orcia, algo más lejos de Florencia. Aquí: Villa Mucellena, Le Mascie."}],
-  lodging:[
-   {n:"Romitorio di Serelle",lbl:"Romitorio",c:[43.494268,11.229583],plan:"A",rating:9.4,reviews:195,pp:382,url:"https://www.booking.com/hotel/it/romitorio-di-serelle.html"},
-   {n:"Casale di Villore",lbl:"Casale Villore",c:[43.468412,11.210363],plan:"A",rating:9.6,reviews:81,pp:492,url:"https://www.booking.com/hotel/it/casale-di-villore-poggibonsi.html"},
-   {n:"Tenuta la Cipresseta",lbl:"Cipresseta",c:[43.494316,11.197391],plan:"A",rating:9.4,reviews:67,pp:284,url:"https://www.booking.com/hotel/it/tenuta-la-cipresseta.html"},
-   {n:"Villetta indip. (Colle)",lbl:"Villetta Colle",c:[43.417982,11.089116],plan:"A",rating:9.3,reviews:52,pp:168,url:"https://www.booking.com/hotel/it/villetta-parco-posiz-strategica.html"},
-   {n:"Villa Mucellena",lbl:"Villa Mucellena",c:[43.335421,11.181542],plan:"B",rating:9.0,reviews:206,pp:224,url:"https://www.booking.com/hotel/it/villa-mucellena-casole-d-39-elsa.html"},
-   {n:"Le Mascie",lbl:"Le Mascie",c:[43.283313,11.141928],plan:"B",rating:9.1,reviews:61,pp:296,url:"https://www.booking.com/hotel/it/le-mascie.html"}],
+   {n:"Plan A · Val d'Elsa",c:[43.46,11.19],r:11000,rec:true,m:"Plan A · corredor Florencia–Siena",t:"Colle di Val d'Elsa, Poggibonsi y alrededores, sobre la superstrada SI-FI. Óptimo para Florencia, San Gimignano y Pisa. Aquí: Podere il Pino, Lilla, Palazzo Renieri, Chianti Village."},
+   {n:"Plan B · Cerca de Siena",c:[43.35,11.16],r:11000,rec:false,m:"Plan B · más cerca de Siena",t:"Casole d'Elsa y el anillo de Siena: más cerca de Siena y la Val d'Orcia. Aquí: Agriturismo Nerbona, Borgo al Cerro y el hotel Villa Scacciapensieri."}],
+  lodging:[],
   routes:[{to:C.duomoFI,label:"~1h"},{to:C.pisa,label:"~1h30"},{to:C.sanGim,label:"30–45m"},{to:C.siena,label:"~30m"},{to:C.pienza,label:"~1h15"}],
   routeAnchor:[43.44,11.19]}
 };
@@ -645,8 +641,8 @@ const toursTos=[
 ];
 
 const checklist=[
- "Decidir zona en Roma (Plan A Prati–Vaticano vs Plan B Prati–Museos) y reservar apartamento",
- "Decidir zona en Toscana (Plan A Val d'Elsa vs Plan B Casole–Sovicille) y reservar casa/agriturismo",
+ "Decidir zona en Roma (Plan A Prati–Vaticano vs Plan B Prati–Lepanto) y reservar en Expedia",
+ "Decidir zona en Toscana (Plan A Val d'Elsa vs Plan B cerca de Siena) y reservar casa/agriturismo en Expedia",
  "Reservar van 8–9 plazas automática + anotar 2 conductores",
  "Comprar entradas: Vaticano, Coliseo y Uffizi/Academia",
  "Fijar fechas exactas y comprar vuelos SJU–FCO",
@@ -790,25 +786,21 @@ renderCosts();
 /* ---------------- Hospedaje decision matrix ---------------- */
 const lodgeData={
  roma:[
-  {n:"Rome Aparts",plan:"A",area:"Prati–Vaticano",price:2451.12,rating:9.6,reviews:747,c:[41.906625,12.458409],amen:3.8,url:"https://www.booking.com/hotel/it/s-peter-big-apart-in-front-of-dome.html"},
-  {n:"La Cupola Apartment",plan:"A",area:"Prati–Vaticano",price:1489.29,rating:9.4,reviews:103,c:[41.906774,12.457663],amen:1.6,url:"https://www.booking.com/hotel/it/la-cupola-apartment-roma.html"},
-  {n:"Suite Sarandrea",plan:"A",area:"Prati–Vaticano",price:1599.33,rating:9.5,reviews:116,c:[41.90505,12.46017],amen:2.2,url:"https://www.booking.com/hotel/it/suite-sarandrea.html"},
-  {n:"San Peter Lory's Aparts",plan:"A",area:"Prati–Vaticano",price:2229.79,rating:9.3,reviews:344,c:[41.907516,12.459913],amen:2.8,url:"https://www.booking.com/hotel/it/san-peter-lory-39-s-house.html"},
-  {n:"Home Domus Giulio Cesare",plan:"A",area:"Prati–Vaticano",price:1000.61,rating:9.0,reviews:141,c:[41.909212,12.458293],amen:2.2,url:"https://www.booking.com/hotel/it/home-domus-giulio-cesare-vatican-museum.html"},
-  {n:"Angel's Garden",plan:"A",area:"Prati–Vaticano",price:1958.73,rating:9.9,reviews:55,c:[41.905341,12.459817],amen:0.6,url:"https://www.booking.com/hotel/it/angels-garden.html"},
-  {n:"Tra i Musei Vaticani",plan:"B",area:"Prati–Museos",price:982.72,rating:9.4,reviews:33,c:[41.907298,12.452497],amen:2.2,url:"https://www.booking.com/hotel/it/vatican-city-apartment-roma2.html"},
-  {n:"My Vatican Place",plan:"B",area:"Prati–Museos",price:1356.91,rating:9.1,reviews:295,c:[41.905109,12.444102],amen:2.2,url:"https://www.booking.com/hotel/it/matteos-vatican-place.html"},
-  {n:"Luxury Laura Vatican Apt",plan:"A",area:"Prati–Vaticano",price:2052.73,rating:9.6,reviews:66,c:[41.907928,12.466187],amen:2.2,url:"https://www.booking.com/hotel/it/luxury-laura-vatican-apartment-roma-centro.html"}
+  {n:"Guest Art - Rome",lbl:"Guest Art",type:"casa",plan:"A",area:"Prati–Vaticano",price:2291,rating:9.8,reviews:41,c:[41.907947,12.456166],amen:2.5,url:"https://www.expedia.com/.h46375701.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"St. Peter mirror Romantic view",lbl:"St. Peter mirror",type:"casa",plan:"A",area:"Prati–Vaticano",price:2761,rating:9.8,reviews:81,c:[41.911537,12.454839],amen:2.5,url:"https://www.expedia.com/.h48855405.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Elegant 3BR near S. Peter",lbl:"Elegant 3BR",type:"casa",plan:"A",area:"Prati–Vaticano",price:2158,rating:9.4,reviews:21,c:[41.903421,12.465711],amen:2.5,url:"https://www.expedia.com/.h92782478.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Trianon Borgo Pio (hotel 4★)",lbl:"Trianon (hotel)",type:"hotel",plan:"A",area:"Prati–Vaticano",price:3702,rating:9.4,reviews:1512,c:[41.904095,12.461617],amen:3.5,url:"https://www.expedia.com/.h1443366.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Prati 3BDR Urban Charm",lbl:"Prati 3BDR",type:"casa",plan:"B",area:"Prati–Lepanto",price:2021,rating:9.4,reviews:18,c:[41.911344,12.469802],amen:2.5,url:"https://www.expedia.com/.h100171671.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Casa Ripetta",lbl:"Casa Ripetta",type:"casa",plan:"B",area:"Prati–Lepanto",price:1919,rating:9.2,reviews:7,c:[41.909253,12.474665],amen:2.0,url:"https://www.expedia.com/.h28946343.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"}
  ],
  toscana:[
-  {n:"Romitorio di Serelle",plan:"A",area:"Val d'Elsa",price:2290.81,rating:9.4,reviews:195,c:[43.494268,11.229583],amen:3.1,url:"https://www.booking.com/hotel/it/romitorio-di-serelle.html"},
-  {n:"Villa Mucellena",plan:"B",area:"Casole–Sovicille",price:1344.50,rating:9.0,reviews:206,c:[43.335421,11.181542],amen:3.1,url:"https://www.booking.com/hotel/it/villa-mucellena-casole-d-39-elsa.html"},
-  {n:"Casale di Villore",plan:"A",area:"Val d'Elsa",price:2950.50,rating:9.6,reviews:81,c:[43.468412,11.210363],amen:3.1,url:"https://www.booking.com/hotel/it/casale-di-villore-poggibonsi.html"},
-  {n:"Villa Lecchi Wellness",plan:"A",area:"Val d'Elsa",price:5890.41,rating:9.2,reviews:228,c:[43.437148,11.187193],amen:3.9,url:"https://www.booking.com/hotel/it/villa-lecchi.html"},
-  {n:"Sasso Gocciolino",plan:"A",area:"Val d'Elsa",price:595.71,rating:9.7,reviews:55,c:[43.471005,11.140878],amen:0.8,url:"https://www.booking.com/hotel/it/appartamento-sasso-gocciolino.html"},
-  {n:"Tenuta la Cipresseta",plan:"A",area:"Val d'Elsa",price:1701.84,rating:9.4,reviews:67,c:[43.494316,11.197391],amen:1.5,url:"https://www.booking.com/hotel/it/tenuta-la-cipresseta.html"},
-  {n:"Villetta indip. (Colle)",plan:"A",area:"Val d'Elsa",price:1008.37,rating:9.3,reviews:52,c:[43.417982,11.089116],amen:1.3,url:"https://www.booking.com/hotel/it/villetta-parco-posiz-strategica.html"},
-  {n:"Le Mascie",plan:"B",area:"Casole–Sovicille",price:1774.73,rating:9.1,reviews:61,c:[43.283313,11.141928],amen:2.3,url:"https://www.booking.com/hotel/it/le-mascie.html"}
+  {n:"Podere il Pino",lbl:"Podere il Pino",type:"casa",plan:"A",area:"Val d'Elsa",price:977,rating:9.2,reviews:18,c:[43.447146,11.117456],amen:2.5,url:"https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Lilla · 6 huéspedes",lbl:"Lilla",type:"casa",plan:"A",area:"Val d'Elsa",price:1036,rating:9.0,reviews:2,c:[43.431735,11.147974],amen:2.0,url:"https://www.expedia.com/.h22586946.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Hotel Palazzo Renieri 3★S",lbl:"Palazzo Renieri (hotel)",type:"hotel",plan:"A",area:"Val d'Elsa",price:1755,rating:8.6,reviews:87,c:[43.42131,11.11694],amen:3.0,url:"https://www.expedia.com/.h20078846.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Chianti Village Morrocco",lbl:"Chianti Village",type:"casa",plan:"A",area:"Val d'Elsa",price:1649,rating:8.6,reviews:115,c:[43.561443,11.205655],amen:2.5,url:"https://www.expedia.com/.h5273860.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Agriturismo Nerbona",lbl:"Agriturismo Nerbona",type:"hotel",plan:"B",area:"Cerca de Siena",price:1254,rating:9.6,reviews:22,c:[43.375165,11.06411],amen:3.0,url:"https://www.expedia.com/.h11047087.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Borgo al Cerro",lbl:"Borgo al Cerro",type:"hotel",plan:"B",area:"Cerca de Siena",price:1540,rating:9.2,reviews:24,c:[43.348405,11.046968],amen:3.0,url:"https://www.expedia.com/.h2524526.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
+  {n:"Villa Scacciapensieri (hotel 4★)",lbl:"Villa Scacciapensieri (hotel)",type:"hotel",plan:"B",area:"Cerca de Siena",price:4776,rating:9.2,reviews:443,c:[43.3364,11.335431],amen:3.5,url:"https://www.expedia.com/.h2693499.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"}
  ]
 };
 const hbAnchor={
@@ -833,15 +825,16 @@ function hbRank(base){
 }
 const hbTableEl=document.getElementById('hb-table');
 function planChecked(plan){const el=document.getElementById(plan==='A'?'ly-plana':'ly-planb');return el?el.checked:true;}
+function typeCheckedM(t){const el=document.getElementById(t==='hotel'?'ly-hotel':'ly-casa');return el?el.checked:true;}
 function hbRender(){
- const shown=hbRank(hbBase).filter(r=>planChecked(r.plan));
+ const shown=hbRank(hbBase).filter(r=>planChecked(r.plan)&&typeCheckedM(r.type));
  if(!shown.length){hbTableEl.innerHTML='<div class="hb-empty">Selecciona Plan A o Plan B para ver candidatos.</div>';return;}
  const max=Math.max(...shown.map(r=>r.score))||1;
  hbTableEl.innerHTML=shown.map((r,i)=>{
   const pp=Math.round(r.price/6), pc=r.plan==='A'?'pa':'pb';
   return `<div class="hb-row ${i===0?'top':''}"><span class="hb-rank">${i+1}</span>
    <div class="hb-main"><a class="hb-name" href="${r.url}" target="_blank" rel="noopener">${r.n} ▸</a>
-   <div class="hb-meta"><span class="plan ${pc}">Plan ${r.plan} · ${r.area}</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div></div>
+   <div class="hb-meta"><span class="ptag ${r.type}">${r.type==='hotel'?'★ Hotel':'⌂ Casa'}</span> <span class="plan ${pc}">Plan ${r.plan} · ${r.area}</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div></div>
    <div class="hb-score"><div class="hb-bar-track"><div class="hb-bar-fill" style="width:${(r.score/max*100).toFixed(0)}%"></div></div><b>${r.score.toFixed(0)}</b></div></div>`;
  }).join('');
 }
@@ -869,6 +862,15 @@ document.querySelectorAll('[data-hb]').forEach(b=>b.addEventListener('click',()=
  const me=document.getElementById(m);
  if(me) me.addEventListener('change',()=>{const he=document.getElementById(h);if(he)he.checked=me.checked;hbRender();});
 });
+/* Hotel/Casa filter linked between matrix and map */
+[['hb-hotel','ly-hotel'],['hb-casa','ly-casa']].forEach(([h,m])=>{
+ const he=document.getElementById(h);
+ if(he) he.addEventListener('change',()=>{const me=document.getElementById(m);if(me){me.checked=he.checked;me.dispatchEvent(new Event('change'));}else{hbRender();}});
+});
+[['ly-hotel','hb-hotel'],['ly-casa','hb-casa']].forEach(([m,h])=>{
+ const me=document.getElementById(m);
+ if(me) me.addEventListener('change',()=>{const he=document.getElementById(h);if(he)he.checked=me.checked;hbRender();});
+});
 document.getElementById('hb-reset').addEventListener('click',()=>{
  hbWeights={...hbDefault};
  document.querySelectorAll('#hb-weights label').forEach(l=>{l.querySelector('input').value=hbDefault[l.dataset.k];});
@@ -883,7 +885,8 @@ try{
  carto(map);
  map.on('click',()=>map.scrollWheelZoom.enable());
  map.on('mouseout',()=>map.scrollWheelZoom.disable());
- const layers={sights:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),planA:L.layerGroup().addTo(map),planB:L.layerGroup().addTo(map)};
+ const layers={sights:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),planA:L.layerGroup().addTo(map),planB:L.layerGroup().addTo(map),lodging:L.layerGroup().addTo(map)};
+ let lodgeMarkers=[];
 
  const sightIcon=()=>L.divIcon({className:'',html:'<div class="mk-sight"></div>',iconSize:[14,14],iconAnchor:[7,7]});
  const transportIcon=(g,c)=>L.divIcon({className:'',html:`<div class="mk-transport" style="--mkc:${c}">${g}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
@@ -892,6 +895,7 @@ try{
 
  function drawBase(key){
   Object.values(layers).forEach(l=>l.clearLayers());
+  lodgeMarkers=[];
   const both=key==='general';
   const sets=both?['roma','toscana']:[key];
   sets.forEach(sk=>{
@@ -909,26 +913,36 @@ try{
     const mid=[(a[0]+r.to[0])/2,(a[1]+r.to[1])/2];
     L.marker(mid,{icon:L.divIcon({className:'',html:`<span class="rt-label">${r.label}</span>`,iconSize:[1,1]}),interactive:false}).addTo(layers.routes);
    });}
-   (data.lodging||[]).forEach(h=>{
+   (lodgeData[sk]||[]).forEach(h=>{
+    const pp=Math.round(h.price/6);
     const bgA=h.plan==='A'?accent:'#fff', fgA=h.plan==='A'?'#fff':accent;
-    const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bgA};color:${fgA};border-color:${accent}">⌂</div>`,iconSize:[22,22],iconAnchor:[11,11]});
-    const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">Plan ${h.plan} · ★${h.rating} (${h.reviews} reseñas) · $${h.pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Booking ▸</a>`;
-    const mk=L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false}).addTo(h.plan==='A'?layers.planA:layers.planB);
+    const glyph=h.type==='hotel'?'★':'⌂';
+    const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bgA};color:${fgA};border-color:${accent}">${glyph}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
+    const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">${h.type==='hotel'?'Hotel':'Casa'} · Plan ${h.plan} · ★${h.rating} (${h.reviews} reseñas) · $${pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Expedia ▸</a>`;
+    const mk=L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false});
     if(!both) mk.bindTooltip(h.lbl||h.n,{permanent:true,direction:'right',offset:[9,0],className:'lodge-tt lodge-'+h.plan});
     else mk.bindTooltip(h.n,{direction:'top',offset:[0,-8]});
+    lodgeMarkers.push({mk,plan:h.plan,type:h.type});
    });
   });
   if(both) map.flyToBounds([[41.6,10.2],[44.0,12.6]],{padding:[30,30],duration:reduce?0:.8});
   else map.flyTo(places[key].center,places[key].zoom,{duration:reduce?0:.8});
   applyLayerToggles();
  }
+ function typeChecked(t){const el=document.getElementById(t==='hotel'?'ly-hotel':'ly-casa');return el?el.checked:true;}
+ function refreshLodging(){
+  layers.lodging.clearLayers();
+  lodgeMarkers.forEach(o=>{if(planChecked(o.plan)&&typeChecked(o.type))o.mk.addTo(layers.lodging);});
+ }
  function applyLayerToggles(){
   [['ly-sights','sights'],['ly-transport','transport'],['ly-routes','routes'],['ly-plana','planA'],['ly-planb','planB']].forEach(([id,k])=>{
-   const on=document.getElementById(id).checked;
+   const el=document.getElementById(id); if(!el) return; const on=el.checked;
    if(on){if(!map.hasLayer(layers[k]))map.addLayer(layers[k]);}else{if(map.hasLayer(layers[k]))map.removeLayer(layers[k]);}
   });
+  refreshLodging();
  }
- ['ly-sights','ly-transport','ly-routes','ly-plana','ly-planb'].forEach(id=>document.getElementById(id).addEventListener('change',applyLayerToggles));
+ window.__applyMapFilters=applyLayerToggles;
+ ['ly-sights','ly-transport','ly-routes','ly-plana','ly-planb','ly-hotel','ly-casa'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',applyLayerToggles);});
  document.querySelectorAll('.base-switch button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.base-switch button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
