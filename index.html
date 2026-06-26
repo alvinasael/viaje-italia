@@ -51,6 +51,10 @@
   .layer-toggles{display:flex;flex-wrap:wrap;gap:8px}
   .layer-toggles label{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer;user-select:none}
   .layer-toggles input{accent-color:var(--accent);width:14px;height:14px;margin:0}
+  .layer-toggles label.ly-plan{padding-left:9px;position:relative}
+  .layer-toggles label.ly-plan::after{content:"";width:9px;height:9px;border-radius:50%;display:inline-block;margin-left:2px}
+  .layer-toggles label.ly-plan.a::after{background:var(--ink)}
+  .layer-toggles label.ly-plan.b::after{background:#fff;border:1.5px solid var(--line-strong)}
   #map{height:560px;width:100%;border:1px solid var(--line-strong);border-radius:12px;box-shadow:var(--shadow);background:#fff;z-index:0}
   @media(max-width:760px){#map{height:440px}}
   .map-legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:13px;color:var(--ink-soft)}
@@ -256,10 +260,10 @@
       </div>
       <div class="layer-toggles">
         <label><input type="checkbox" id="ly-sights" checked> Lugares</label>
-        <label><input type="checkbox" id="ly-zones" checked> Zonas</label>
         <label><input type="checkbox" id="ly-transport" checked> Transporte</label>
         <label><input type="checkbox" id="ly-routes" checked> Rutas</label>
-        <label><input type="checkbox" id="ly-lodging" checked> Hospedaje</label>
+        <label class="ly-plan a"><input type="checkbox" id="ly-plana" checked> Plan A</label>
+        <label class="ly-plan b"><input type="checkbox" id="ly-planb" checked> Plan B</label>
       </div>
     </div>
     <div id="map"></div>
@@ -267,7 +271,7 @@
       <span class="lg"><span class="pin sight"></span> Lugar a visitar</span>
       <span class="lg"><span class="pin transport"></span> Transporte (tren · metro · aeropuerto)</span>
       <span class="lg"><span class="pin zone"></span> Zona Plan A (sólida) / Plan B (punteada)</span>
-      <span class="lg"><span class="pin lodge"></span> Hospedaje candidato (Booking)</span>
+      <span class="lg"><span class="pin lodge"></span> Hospedaje candidato — filtra con Plan A / Plan B arriba</span>
     </div>
   </div>
 </section>
@@ -856,7 +860,7 @@ try{
  carto(map);
  map.on('click',()=>map.scrollWheelZoom.enable());
  map.on('mouseout',()=>map.scrollWheelZoom.disable());
- const layers={sights:L.layerGroup().addTo(map),zones:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),lodging:L.layerGroup().addTo(map)};
+ const layers={sights:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),planA:L.layerGroup().addTo(map),planB:L.layerGroup().addTo(map)};
 
  const sightIcon=()=>L.divIcon({className:'',html:'<div class="mk-sight"></div>',iconSize:[14,14],iconAnchor:[7,7]});
  const transportIcon=(g,c)=>L.divIcon({className:'',html:`<div class="mk-transport" style="--mkc:${c}">${g}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
@@ -872,8 +876,9 @@ try{
    data.sights.forEach(p=>L.marker(p.c,{icon:sightIcon()}).bindPopup(popup(p),{closeButton:false}).addTo(layers.sights).bindTooltip(p.n,{direction:'top',offset:[0,-8]}));
    data.transport.forEach(p=>L.marker(p.c,{icon:transportIcon(p.g,accent)}).bindPopup(popup(p),{closeButton:false}).addTo(layers.transport));
    data.zones.forEach(z=>{
-    L.circle(z.c,{radius:z.r,color:accent,weight:z.rec?2:1.5,opacity:.9,dashArray:z.rec?null:'5,5',fillColor:accent,fillOpacity:z.rec?.16:.09}).bindPopup(popup(z),{closeButton:false}).addTo(layers.zones);
-    L.marker(z.c,{icon:zoneLabel(z.n,accent),interactive:false}).addTo(layers.zones);
+    const zl=z.rec?layers.planA:layers.planB;
+    L.circle(z.c,{radius:z.r,color:accent,weight:z.rec?2:1.5,opacity:.9,dashArray:z.rec?null:'5,5',fillColor:accent,fillOpacity:z.rec?.16:.09}).bindPopup(popup(z),{closeButton:false}).addTo(zl);
+    L.marker(z.c,{icon:zoneLabel(z.n,accent),interactive:false}).addTo(zl);
    });
    if(!both){(data.routes||[]).forEach(r=>{
     const a=data.routeAnchor;
@@ -885,7 +890,7 @@ try{
     const bgA=h.plan==='A'?accent:'#fff', fgA=h.plan==='A'?'#fff':accent;
     const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bgA};color:${fgA};border-color:${accent}">⌂</div>`,iconSize:[22,22],iconAnchor:[11,11]});
     const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">Plan ${h.plan} · ★${h.rating} (${h.reviews} reseñas) · $${h.pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Booking ▸</a>`;
-    const mk=L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false}).addTo(layers.lodging);
+    const mk=L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false}).addTo(h.plan==='A'?layers.planA:layers.planB);
     if(!both) mk.bindTooltip(h.lbl||h.n,{permanent:true,direction:'right',offset:[9,0],className:'lodge-tt lodge-'+h.plan});
     else mk.bindTooltip(h.n,{direction:'top',offset:[0,-8]});
    });
@@ -895,12 +900,12 @@ try{
   applyLayerToggles();
  }
  function applyLayerToggles(){
-  [['ly-sights','sights'],['ly-zones','zones'],['ly-transport','transport'],['ly-routes','routes'],['ly-lodging','lodging']].forEach(([id,k])=>{
+  [['ly-sights','sights'],['ly-transport','transport'],['ly-routes','routes'],['ly-plana','planA'],['ly-planb','planB']].forEach(([id,k])=>{
    const on=document.getElementById(id).checked;
    if(on){if(!map.hasLayer(layers[k]))map.addLayer(layers[k]);}else{if(map.hasLayer(layers[k]))map.removeLayer(layers[k]);}
   });
  }
- ['ly-sights','ly-zones','ly-transport','ly-routes','ly-lodging'].forEach(id=>document.getElementById(id).addEventListener('change',applyLayerToggles));
+ ['ly-sights','ly-transport','ly-routes','ly-plana','ly-planb'].forEach(id=>document.getElementById(id).addEventListener('change',applyLayerToggles));
  document.querySelectorAll('.base-switch button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.base-switch button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
