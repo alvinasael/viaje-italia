@@ -59,9 +59,11 @@
   .lg .pin.sight{background:var(--ink)}
   .lg .pin.transport{border-radius:3px;border-color:var(--accent)}
   .lg .pin.zone{background:var(--accent);opacity:.4;border:1px dashed var(--accent)}
+  .lg .pin.lodge{background:var(--ink);border-color:var(--ink);border-radius:4px}
 
   .mk-sight{width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid #fff;box-shadow:0 0 0 1px var(--ink)}
   .mk-transport{width:22px;height:22px;border-radius:5px;background:#fff;border:2px solid var(--mkc,var(--neutral));color:var(--mkc,var(--neutral));font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+  .mk-lodge{width:22px;height:22px;border-radius:6px;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:var(--shadow)}
   .zone-label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--mkc,var(--neutral));padding:3px 7px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow);font-weight:600}
   .leaflet-popup-content-wrapper{border-radius:10px}
   .leaflet-popup-content{margin:12px 14px;font-family:"Inter",sans-serif;font-size:13px;line-height:1.5}
@@ -138,6 +140,41 @@
   .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-strong);border-radius:999px;padding:2px 9px;color:var(--ink-soft);margin-left:8px;vertical-align:middle}
   .disclaimer{font-size:12.5px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);border-left:3px solid var(--neutral);border-radius:8px;padding:13px 16px;margin-top:22px}
 
+  /* Hospedaje matrix */
+  .hb-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:22px 0 16px}
+  .hb-reset{font-family:"IBM Plex Mono",monospace;font-size:12px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);border-radius:999px;padding:8px 14px;cursor:pointer}
+  .hb-reset:hover{color:var(--ink)}
+  .hb-weights{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  @media(max-width:760px){.hb-weights{grid-template-columns:1fr 1fr}}
+  @media(max-width:440px){.hb-weights{grid-template-columns:1fr}}
+  .hb-weights label{display:flex;flex-direction:column;gap:7px}
+  .hb-weights .wl{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);display:flex;justify-content:space-between;gap:6px}
+  .hb-weights .wl output{color:var(--ink);font-weight:600}
+  .hb-weights input[type=range]{width:100%;accent-color:var(--toscana);height:4px}
+  .hb-table{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+  .hb-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+  .hb-row.top{border-color:var(--toscana);box-shadow:0 0 0 1px var(--toscana) inset,var(--shadow)}
+  .hb-rank{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15px;color:var(--ink-soft);min-width:20px;text-align:center}
+  .hb-row.top .hb-rank{color:var(--toscana)}
+  .hb-main{flex:1;min-width:0}
+  .hb-name{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15px;text-decoration:none;color:var(--ink)}
+  .hb-name:hover{text-decoration:underline}
+  .hb-meta{font-size:12px;color:var(--ink-soft);margin-top:3px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .hb-meta .plan{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 8px;font-weight:600;color:#fff}
+  .hb-meta .plan.pa{background:var(--toscana)} .hb-meta .plan.pb{background:var(--neutral)}
+  .hb-score{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:96px}
+  .hb-score b{font-family:"IBM Plex Mono",monospace;font-size:14px}
+  .hb-bar-track{width:90px;height:6px;background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .hb-bar-fill{height:100%;background:linear-gradient(90deg,#3c4658,var(--toscana));transition:width .4s cubic-bezier(.2,.7,.2,1)}
+  .hb-scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+  @media(max-width:680px){.hb-scenarios{grid-template-columns:1fr}}
+  .scen{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .scen.best{border-color:var(--toscana);box-shadow:0 0 0 1px var(--toscana) inset}
+  .scen .sh{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .scen.best .sh{color:var(--toscana)}
+  .scen .sc{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:14.5px;margin:5px 0}
+  .scen .sp{font-size:15px;font-weight:600}
+
   /* Documentar */
   .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:24px}
   @media(max-width:860px){.doc-grid{grid-template-columns:1fr}}
@@ -206,7 +243,7 @@
   <div class="wrap">
     <div class="eyebrow">Mapa de planificación</div>
     <h2>Lugares, zonas para quedarse y transporte</h2>
-    <p class="lede">Las <strong>burbujas</strong> son zonas candidatas para hospedarse (aún sin sitio fijo), elegidas para minimizar traslados. Cuadrados = nodos de transporte; puntos sólidos = lugares a visitar. Cambia de base para acercar el mapa.</p>
+    <p class="lede">Las <strong>burbujas</strong> son zonas candidatas para hospedarse, ahora divididas en <strong>Plan A</strong> y <strong>Plan B</strong> según dónde se concentran las mejores opciones. La capa <strong>Hospedaje</strong> muestra los candidatos reales de Booking (con enlace). Cuadrados = transporte; puntos sólidos = lugares a visitar. Cambia de base para acercar el mapa.</p>
     <div class="map-toolbar">
       <div class="base-switch" role="tablist" aria-label="Seleccionar base">
         <button data-base="general" class="active" role="tab">Vista general</button>
@@ -218,13 +255,15 @@
         <label><input type="checkbox" id="ly-zones" checked> Zonas</label>
         <label><input type="checkbox" id="ly-transport" checked> Transporte</label>
         <label><input type="checkbox" id="ly-routes" checked> Rutas</label>
+        <label><input type="checkbox" id="ly-lodging" checked> Hospedaje</label>
       </div>
     </div>
     <div id="map"></div>
     <div class="map-legend">
       <span class="lg"><span class="pin sight"></span> Lugar a visitar</span>
       <span class="lg"><span class="pin transport"></span> Transporte (tren · metro · aeropuerto)</span>
-      <span class="lg"><span class="pin zone"></span> Zona candidata para hospedarse</span>
+      <span class="lg"><span class="pin zone"></span> Zona Plan A (sólida) / Plan B (punteada)</span>
+      <span class="lg"><span class="pin lodge"></span> Hospedaje candidato (Booking)</span>
     </div>
   </div>
 </section>
@@ -261,6 +300,40 @@
       <tfoot><tr><td>Total estimado</td><td class="num" id="cf-lo"></td><td class="num" id="cf-hi"></td><td class="wcol"></td></tr></tfoot>
     </table>
     <p class="cnote">Rangos del documento base. La bebé paga mucho menos en vuelos, así que el total real del grupo queda por debajo del ×6 lineal. <strong>Palancas para abaratar:</strong> viajar en noviembre, cocinar cenas en el agriturismo, y reservar vuelos, van y entradas con anticipación.</p>
+  </div>
+</section>
+
+<!-- HOSPEDAJE -->
+<section id="hospedaje" class="reveal">
+  <div class="wrap">
+    <div class="eyebrow">Hospedaje óptimo</div>
+    <h2>Matriz de decisión · ajusta los pesos</h2>
+    <p class="lede">Ranking de candidatos reales de Booking (9+/10 ≈ 4.5★, 6 personas, fin de sep 2026) según tus cinco criterios. Mueve los pesos y el ranking se recalcula en vivo para iterar.</p>
+
+    <div class="hb-bar">
+      <div class="base-switch" role="tablist" aria-label="Base de hospedaje">
+        <button data-hb="roma" class="active" role="tab">Roma · Prati</button>
+        <button data-hb="toscana" role="tab">Toscana</button>
+      </div>
+      <button id="hb-reset" class="hb-reset">↺ Pesos por defecto</button>
+    </div>
+
+    <div class="hb-weights" id="hb-weights">
+      <label data-k="loc"><span class="wl">Cercanía a lugares <output>25%</output></span><input type="range" min="0" max="40" value="25"></label>
+      <label data-k="trans"><span class="wl">Transporte <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
+      <label data-k="rating"><span class="wl">Rating <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
+      <label data-k="rev"><span class="wl">Reseñas <output>15%</output></span><input type="range" min="0" max="40" value="15"></label>
+      <label data-k="exp"><span class="wl">Experiencia <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
+    </div>
+
+    <div class="hb-table" id="hb-table"></div>
+
+    <div class="hb-scenarios">
+      <div class="scen"><div class="sh">Premium · experiencia máx.</div><div class="sc">Rome Aparts + Romitorio di Serelle</div><div class="sp mono">~$791 / pers</div></div>
+      <div class="scen best"><div class="sh">Balanceado · recomendado</div><div class="sc">La Cupola + Villa Mucellena</div><div class="sp mono">~$472 / pers</div></div>
+      <div class="scen"><div class="sh">Valor</div><div class="sc">Tra i Musei + Villetta (Colle)</div><div class="sp mono">~$332 / pers</div></div>
+    </div>
+    <p class="disclaimer"><strong>Metodología.</strong> Cada criterio se normaliza (min–max) dentro de cada base y se pondera con los pesos de arriba. <em>Cercanía</em> = distancia a los lugares de los días (al Vaticano en Roma; promedio a Florencia/Siena/San Gim./Pisa/Lucca/Val d'Orcia en Toscana). <em>Transporte</em> = al metro Línea A (Roma) o a la estación de Siena (Toscana). <em>Experiencia</em> combina amenidades (ascensor, accesibilidad, A/C, piscina, facilidades para bebé) y valor. Verifica 3 habitaciones reales, A/C y planta baja antes de reservar.</p>
   </div>
 </section>
 
@@ -480,8 +553,15 @@ const places={
    {n:"Roma Termini",c:[41.9009,12.5021],g:"▦",m:"Estación central",t:"Leonardo Express a FCO"},
    {n:"Aeropuerto FCO",c:C.fco,g:"✈",m:"Llegada / salida",t:"~45 min a Prati"}],
   zones:[
-   {n:"Prati",c:[41.9080,12.4640],r:680,rec:true,m:"Zona recomendada",t:"Aceras anchas y planas, tranquila de noche, a pasos del Vaticano y del metro A. Filtros: 3 hab, ascensor, A/C."},
-   {n:"Aventino",c:[41.8820,12.4760],r:620,rec:false,m:"Alternativa",t:"Más calmada si Prati se llena. Buen ambiente local, algo más lejos del Vaticano."}]},
+   {n:"Plan A · Prati–Vaticano",c:[41.9068,12.4596],r:520,rec:true,m:"Plan A · junto al Vaticano",t:"Cluster pegado a San Pedro y Castel, a pasos del metro Ottaviano. Aquí: Rome Aparts, La Cupola, Suite Sarandrea, Home Domus."},
+   {n:"Plan B · Prati–Museos",c:[41.9063,12.4485],r:520,rec:false,m:"Plan B · lado Museos/Metro",t:"Lado oeste, junto a la entrada de los Museos Vaticanos y metros Ottaviano/Cipro. Algo más económico: Tra i Musei, My Vatican Place."}],
+  lodging:[
+   {n:"Rome Aparts",c:[41.906625,12.458409],plan:"A",rating:9.6,reviews:747,pp:409,url:"https://www.booking.com/hotel/it/s-peter-big-apart-in-front-of-dome.html"},
+   {n:"La Cupola Apartment",c:[41.906774,12.457663],plan:"A",rating:9.4,reviews:103,pp:248,url:"https://www.booking.com/hotel/it/la-cupola-apartment-roma.html"},
+   {n:"Suite Sarandrea",c:[41.90505,12.46017],plan:"A",rating:9.5,reviews:116,pp:267,url:"https://www.booking.com/hotel/it/suite-sarandrea.html"},
+   {n:"Home Domus Giulio Cesare",c:[41.909212,12.458293],plan:"A",rating:9.0,reviews:141,pp:167,url:"https://www.booking.com/hotel/it/home-domus-giulio-cesare-vatican-museum.html"},
+   {n:"Tra i Musei Vaticani",c:[41.907298,12.452497],plan:"B",rating:9.4,reviews:33,pp:164,url:"https://www.booking.com/hotel/it/vatican-city-apartment-roma2.html"},
+   {n:"My Vatican Place",c:[41.905109,12.444102],plan:"B",rating:9.1,reviews:295,pp:226,url:"https://www.booking.com/hotel/it/matteos-vatican-place.html"}]},
  toscana:{center:[43.40,11.45],zoom:9,
   sights:[
    {n:"Siena",c:C.siena,m:"Día 10",t:"~30 min desde la base"},
@@ -502,10 +582,17 @@ const places={
    {n:"Firenze S.M.N.",c:C.firenzeSMN,g:"▦",m:"Estación de Florencia",t:"Llegada al centro"},
    {n:"Chiusi–Chianciano",c:[43.0758,11.9513],g:"▦",m:"Línea Roma–Florencia",t:"Útil para el sur"}],
   zones:[
-   {n:"Chianti",c:[43.42,11.255],r:9500,rec:true,m:"Zona base recomendada",t:"Viñedos y paisaje icónico. ~30 min de Siena/San Gimignano, ~1h de Florencia y Val d'Orcia, ~1h30 de Pisa."},
-   {n:"Crete Senesi",c:[43.185,11.520],r:9500,rec:false,m:"Alternativa más tranquila",t:"Lo más rural y silencioso. Más cerca de Val d'Orcia, algo más lejos de Pisa/Florencia."}],
-  routes:[{to:C.duomoFI,label:"~1h"},{to:C.pisa,label:"~1h30"},{to:C.sanGim,label:"30–45m"},{to:C.siena,label:"~30m"},{to:C.pienza,label:"~1h"}],
-  routeAnchor:[43.39,11.245]}
+   {n:"Plan A · Val d'Elsa",c:[43.46,11.19],r:11000,rec:true,m:"Plan A · corredor Florencia–Siena",t:"Barberino, Poggibonsi y Colle di Val d'Elsa, sobre la superstrada SI-FI. Óptimo para Florencia, San Gimignano y Pisa. Aquí: Romitorio di Serelle, Casale di Villore, Cipresseta, Villetta."},
+   {n:"Plan B · Casole–Sovicille",c:[43.31,11.16],r:10500,rec:false,m:"Plan B · más cerca de Siena",t:"Casole d'Elsa y Sovicille, al sur: más cerca de Siena y la Val d'Orcia, algo más lejos de Florencia. Aquí: Villa Mucellena, Le Mascie."}],
+  lodging:[
+   {n:"Romitorio di Serelle",c:[43.494268,11.229583],plan:"A",rating:9.4,reviews:195,pp:382,url:"https://www.booking.com/hotel/it/romitorio-di-serelle.html"},
+   {n:"Casale di Villore",c:[43.468412,11.210363],plan:"A",rating:9.6,reviews:81,pp:492,url:"https://www.booking.com/hotel/it/casale-di-villore-poggibonsi.html"},
+   {n:"Tenuta la Cipresseta",c:[43.494316,11.197391],plan:"A",rating:9.4,reviews:67,pp:284,url:"https://www.booking.com/hotel/it/tenuta-la-cipresseta.html"},
+   {n:"Villetta indip. (Colle)",c:[43.417982,11.089116],plan:"A",rating:9.3,reviews:52,pp:168,url:"https://www.booking.com/hotel/it/villetta-parco-posiz-strategica.html"},
+   {n:"Villa Mucellena",c:[43.335421,11.181542],plan:"B",rating:9.0,reviews:206,pp:224,url:"https://www.booking.com/hotel/it/villa-mucellena-casole-d-39-elsa.html"},
+   {n:"Le Mascie",c:[43.283313,11.141928],plan:"B",rating:9.1,reviews:61,pp:296,url:"https://www.booking.com/hotel/it/le-mascie.html"}],
+  routes:[{to:C.duomoFI,label:"~1h"},{to:C.pisa,label:"~1h30"},{to:C.sanGim,label:"30–45m"},{to:C.siena,label:"~30m"},{to:C.pienza,label:"~1h15"}],
+  routeAnchor:[43.44,11.19]}
 };
 
 const costs=[
@@ -539,8 +626,8 @@ const toursTos=[
 ];
 
 const checklist=[
- "Elegir y reservar apartamento en Prati (3 hab · ascensor · A/C)",
- "Elegir agriturismo en la zona base (camas twin · planta baja p/ senior)",
+ "Decidir zona en Roma (Plan A Prati–Vaticano vs Plan B Prati–Museos) y reservar apartamento",
+ "Decidir zona en Toscana (Plan A Val d'Elsa vs Plan B Casole–Sovicille) y reservar casa/agriturismo",
  "Reservar van 8–9 plazas automática + anotar 2 conductores",
  "Comprar entradas: Vaticano, Coliseo y Uffizi/Academia",
  "Fijar fechas exactas y comprar vuelos SJU–FCO",
@@ -557,7 +644,7 @@ const pnotes=[
  {h:"Reservas clave",d:"Vaticano, Coliseo y Uffizi/Academia se agotan: compra con semanas de antelación."}
 ];
 
-const sections=[["mapa","Mapa","◉"],["itinerario","Itinerario","☷"],["costos","Costos","$"],["tours","Tours","✦"],["documentar","Documentar","✎"],["practicas","Notas prácticas","ⓘ"]];
+const sections=[["mapa","Mapa","◉"],["itinerario","Itinerario","☷"],["costos","Costos","$"],["hospedaje","Hospedaje","⌂"],["tours","Tours","✦"],["documentar","Documentar","✎"],["practicas","Notas prácticas","ⓘ"]];
 
 /* ---------------- render ---------------- */
 document.getElementById('updated').textContent="ACT. "+new Date().toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
@@ -681,6 +768,83 @@ document.querySelectorAll('.cost-toggle button').forEach(b=>b.addEventListener('
 }));
 renderCosts();
 
+/* ---------------- Hospedaje decision matrix ---------------- */
+const lodgeData={
+ roma:[
+  {n:"Rome Aparts",plan:"A",area:"Prati–Vaticano",price:2451.12,rating:9.6,reviews:747,c:[41.906625,12.458409],amen:3.8,url:"https://www.booking.com/hotel/it/s-peter-big-apart-in-front-of-dome.html"},
+  {n:"La Cupola Apartment",plan:"A",area:"Prati–Vaticano",price:1489.29,rating:9.4,reviews:103,c:[41.906774,12.457663],amen:1.6,url:"https://www.booking.com/hotel/it/la-cupola-apartment-roma.html"},
+  {n:"Suite Sarandrea",plan:"A",area:"Prati–Vaticano",price:1599.33,rating:9.5,reviews:116,c:[41.90505,12.46017],amen:2.2,url:"https://www.booking.com/hotel/it/suite-sarandrea.html"},
+  {n:"San Peter Lory's Aparts",plan:"A",area:"Prati–Vaticano",price:2229.79,rating:9.3,reviews:344,c:[41.907516,12.459913],amen:2.8,url:"https://www.booking.com/hotel/it/san-peter-lory-39-s-house.html"},
+  {n:"Home Domus Giulio Cesare",plan:"A",area:"Prati–Vaticano",price:1000.61,rating:9.0,reviews:141,c:[41.909212,12.458293],amen:2.2,url:"https://www.booking.com/hotel/it/home-domus-giulio-cesare-vatican-museum.html"},
+  {n:"Angel's Garden",plan:"A",area:"Prati–Vaticano",price:1958.73,rating:9.9,reviews:55,c:[41.905341,12.459817],amen:0.6,url:"https://www.booking.com/hotel/it/angels-garden.html"},
+  {n:"Tra i Musei Vaticani",plan:"B",area:"Prati–Museos",price:982.72,rating:9.4,reviews:33,c:[41.907298,12.452497],amen:2.2,url:"https://www.booking.com/hotel/it/vatican-city-apartment-roma2.html"},
+  {n:"My Vatican Place",plan:"B",area:"Prati–Museos",price:1356.91,rating:9.1,reviews:295,c:[41.905109,12.444102],amen:2.2,url:"https://www.booking.com/hotel/it/matteos-vatican-place.html"},
+  {n:"Luxury Laura Vatican Apt",plan:"A",area:"Prati–Vaticano",price:2052.73,rating:9.6,reviews:66,c:[41.907928,12.466187],amen:2.2,url:"https://www.booking.com/hotel/it/luxury-laura-vatican-apartment-roma-centro.html"}
+ ],
+ toscana:[
+  {n:"Romitorio di Serelle",plan:"A",area:"Val d'Elsa",price:2290.81,rating:9.4,reviews:195,c:[43.494268,11.229583],amen:3.1,url:"https://www.booking.com/hotel/it/romitorio-di-serelle.html"},
+  {n:"Villa Mucellena",plan:"B",area:"Casole–Sovicille",price:1344.50,rating:9.0,reviews:206,c:[43.335421,11.181542],amen:3.1,url:"https://www.booking.com/hotel/it/villa-mucellena-casole-d-39-elsa.html"},
+  {n:"Casale di Villore",plan:"A",area:"Val d'Elsa",price:2950.50,rating:9.6,reviews:81,c:[43.468412,11.210363],amen:3.1,url:"https://www.booking.com/hotel/it/casale-di-villore-poggibonsi.html"},
+  {n:"Villa Lecchi Wellness",plan:"A",area:"Val d'Elsa",price:5890.41,rating:9.2,reviews:228,c:[43.437148,11.187193],amen:3.9,url:"https://www.booking.com/hotel/it/villa-lecchi.html"},
+  {n:"Sasso Gocciolino",plan:"A",area:"Val d'Elsa",price:595.71,rating:9.7,reviews:55,c:[43.471005,11.140878],amen:0.8,url:"https://www.booking.com/hotel/it/appartamento-sasso-gocciolino.html"},
+  {n:"Tenuta la Cipresseta",plan:"A",area:"Val d'Elsa",price:1701.84,rating:9.4,reviews:67,c:[43.494316,11.197391],amen:1.5,url:"https://www.booking.com/hotel/it/tenuta-la-cipresseta.html"},
+  {n:"Villetta indip. (Colle)",plan:"A",area:"Val d'Elsa",price:1008.37,rating:9.3,reviews:52,c:[43.417982,11.089116],amen:1.3,url:"https://www.booking.com/hotel/it/villetta-parco-posiz-strategica.html"},
+  {n:"Le Mascie",plan:"B",area:"Casole–Sovicille",price:1774.73,rating:9.1,reviews:61,c:[43.283313,11.141928],amen:2.3,url:"https://www.booking.com/hotel/it/le-mascie.html"}
+ ]
+};
+const hbAnchor={
+ roma:{targets:null,loc:[41.9065,12.4536],trans:[[41.9078,12.4565],[41.9180,12.4660]]},
+ toscana:{targets:[[43.7731,11.2560],[43.3188,11.3308],[43.4677,11.0431],[43.7230,10.3966],[43.8430,10.5027],[43.0769,11.6786]],loc:null,trans:[[43.3257,11.3215]]}
+};
+function hbHav(a,b){const R=6371,r=Math.PI/180;const dLa=(b[0]-a[0])*r,dLo=(b[1]-a[1])*r;const h=Math.sin(dLa/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+function hbMM(arr,benefit){const lo=Math.min(...arr),hi=Math.max(...arr);return arr.map(v=>hi===lo?100:(benefit?(v-lo)/(hi-lo)*100:(hi-v)/(hi-lo)*100));}
+const hbDefault={loc:25,trans:20,rating:20,rev:15,exp:20};
+let hbWeights={...hbDefault}, hbBase='roma';
+function hbRank(base){
+ const rows=lodgeData[base], A=hbAnchor[base];
+ const loc=rows.map(r=>A.targets?A.targets.reduce((s,t)=>s+hbHav(r.c,t),0)/A.targets.length:hbHav(r.c,A.loc));
+ const tr=rows.map(r=>Math.min(...A.trans.map(t=>hbHav(r.c,t))));
+ const locN=hbMM(loc,false), trN=hbMM(tr,false);
+ const ratingN=hbMM(rows.map(r=>r.rating),true), revN=hbMM(rows.map(r=>Math.log10(r.reviews||1)),true);
+ const amenN=hbMM(rows.map(r=>r.amen),true), valueN=hbMM(rows.map(r=>r.price),false);
+ const expN=hbMM(amenN.map((a,i)=>0.6*a+0.4*valueN[i]),true);
+ const tot=hbWeights.loc+hbWeights.trans+hbWeights.rating+hbWeights.rev+hbWeights.exp||1;
+ return rows.map((r,i)=>({...r,score:(hbWeights.loc*locN[i]+hbWeights.trans*trN[i]+hbWeights.rating*ratingN[i]+hbWeights.rev*revN[i]+hbWeights.exp*expN[i])/tot}))
+  .sort((a,b)=>b.score-a.score);
+}
+const hbTableEl=document.getElementById('hb-table');
+function hbRender(){
+ const ranked=hbRank(hbBase), max=Math.max(...ranked.map(r=>r.score))||1;
+ hbTableEl.innerHTML=ranked.map((r,i)=>{
+  const pp=Math.round(r.price/6), pc=r.plan==='A'?'pa':'pb';
+  return `<div class="hb-row ${i===0?'top':''}"><span class="hb-rank">${i+1}</span>
+   <div class="hb-main"><a class="hb-name" href="${r.url}" target="_blank" rel="noopener">${r.n} ▸</a>
+   <div class="hb-meta"><span class="plan ${pc}">Plan ${r.plan} · ${r.area}</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div></div>
+   <div class="hb-score"><div class="hb-bar-track"><div class="hb-bar-fill" style="width:${(r.score/max*100).toFixed(0)}%"></div></div><b>${r.score.toFixed(0)}</b></div></div>`;
+ }).join('');
+}
+function hbUpdateLabels(){
+ const tot=hbWeights.loc+hbWeights.trans+hbWeights.rating+hbWeights.rev+hbWeights.exp||1;
+ document.querySelectorAll('#hb-weights label').forEach(l=>{
+  const k=l.dataset.k; l.querySelector('output').textContent=Math.round(hbWeights[k]/tot*100)+'%';
+ });
+}
+document.querySelectorAll('#hb-weights label').forEach(l=>{
+ const k=l.dataset.k, inp=l.querySelector('input');
+ inp.value=hbDefault[k];
+ inp.addEventListener('input',()=>{hbWeights[k]=+inp.value; hbUpdateLabels(); hbRender(); store.set('italia_hbw',JSON.stringify(hbWeights));});
+});
+document.querySelectorAll('[data-hb]').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('[data-hb]').forEach(x=>x.classList.remove('active'));
+ b.classList.add('active'); hbBase=b.dataset.hb; hbRender();
+}));
+document.getElementById('hb-reset').addEventListener('click',()=>{
+ hbWeights={...hbDefault};
+ document.querySelectorAll('#hb-weights label').forEach(l=>{l.querySelector('input').value=hbDefault[l.dataset.k];});
+ hbUpdateLabels(); hbRender(); store.set('italia_hbw',JSON.stringify(hbWeights));
+});
+hbUpdateLabels(); hbRender();
+
 /* ---------------- main map ---------------- */
 let map=null;
 try{
@@ -688,7 +852,7 @@ try{
  carto(map);
  map.on('click',()=>map.scrollWheelZoom.enable());
  map.on('mouseout',()=>map.scrollWheelZoom.disable());
- const layers={sights:L.layerGroup().addTo(map),zones:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map)};
+ const layers={sights:L.layerGroup().addTo(map),zones:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),lodging:L.layerGroup().addTo(map)};
 
  const sightIcon=()=>L.divIcon({className:'',html:'<div class="mk-sight"></div>',iconSize:[14,14],iconAnchor:[7,7]});
  const transportIcon=(g,c)=>L.divIcon({className:'',html:`<div class="mk-transport" style="--mkc:${c}">${g}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
@@ -713,18 +877,24 @@ try{
     const mid=[(a[0]+r.to[0])/2,(a[1]+r.to[1])/2];
     L.marker(mid,{icon:L.divIcon({className:'',html:`<span class="rt-label">${r.label}</span>`,iconSize:[1,1]}),interactive:false}).addTo(layers.routes);
    });}
+   if(!both){(data.lodging||[]).forEach(h=>{
+    const bgA=h.plan==='A'?accent:'#fff', fgA=h.plan==='A'?'#fff':accent;
+    const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bgA};color:${fgA};border-color:${accent}">⌂</div>`,iconSize:[22,22],iconAnchor:[11,11]});
+    const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">Plan ${h.plan} · ★${h.rating} (${h.reviews} reseñas) · $${h.pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Booking ▸</a>`;
+    L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false}).addTo(layers.lodging).bindTooltip(h.n,{direction:'top',offset:[0,-8]});
+   });}
   });
   if(both) map.flyToBounds([[41.6,10.2],[44.0,12.6]],{padding:[30,30],duration:reduce?0:.8});
   else map.flyTo(places[key].center,places[key].zoom,{duration:reduce?0:.8});
   applyLayerToggles();
  }
  function applyLayerToggles(){
-  [['ly-sights','sights'],['ly-zones','zones'],['ly-transport','transport'],['ly-routes','routes']].forEach(([id,k])=>{
+  [['ly-sights','sights'],['ly-zones','zones'],['ly-transport','transport'],['ly-routes','routes'],['ly-lodging','lodging']].forEach(([id,k])=>{
    const on=document.getElementById(id).checked;
    if(on){if(!map.hasLayer(layers[k]))map.addLayer(layers[k]);}else{if(map.hasLayer(layers[k]))map.removeLayer(layers[k]);}
   });
  }
- ['ly-sights','ly-zones','ly-transport','ly-routes'].forEach(id=>document.getElementById(id).addEventListener('change',applyLayerToggles));
+ ['ly-sights','ly-zones','ly-transport','ly-routes','ly-lodging'].forEach(id=>document.getElementById(id).addEventListener('change',applyLayerToggles));
  document.querySelectorAll('.base-switch button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.base-switch button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
@@ -744,6 +914,7 @@ try{
 
 /* persistence */
 const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+(function(){const sw=store.get('italia_hbw');if(sw){try{const w=JSON.parse(sw);Object.assign(hbWeights,w);document.querySelectorAll('#hb-weights label').forEach(l=>{const inp=l.querySelector('input');if(hbWeights[l.dataset.k]!=null)inp.value=hbWeights[l.dataset.k];});hbUpdateLabels();hbRender();}catch(e){}}})();
 const clEl=document.getElementById('checklist');
 const savedChecks=(()=>{try{return JSON.parse(store.get('italia_checks')||'{}');}catch(e){return {};}})();
 checklist.forEach((c,i)=>{
