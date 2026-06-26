@@ -405,12 +405,12 @@ const stayByDay={
  3:{kind:'roma',where:'Prati · noche 2 de 4'},
  4:{kind:'roma',where:'Prati · noche 3 de 4'},
  5:{kind:'roma',where:'Prati · noche 4 de 4'},
- 6:{kind:'toscana',where:'Agriturismo · noche 1 de 5',out:'Prati',in:'Agriturismo',vanPick:'Termini / FCO'},
+ 6:{kind:'toscana',where:'Agriturismo · noche 1 de 5',out:'Prati',in:'Agriturismo',vanPick:'Termini / FCO',vanPickT:'~11:00'},
  7:{kind:'toscana',where:'Agriturismo · noche 2 de 5'},
  8:{kind:'toscana',where:'Agriturismo · noche 3 de 5'},
  9:{kind:'toscana',where:'Agriturismo · noche 4 de 5'},
  10:{kind:'toscana',where:'Agriturismo · noche 5 de 5'},
- 11:{kind:'flight',where:'Vuelo de regreso · sin noche',out:'Agriturismo',vanDrop:'FCO'}
+ 11:{kind:'flight',where:'Vuelo de regreso · sin noche',out:'Agriturismo',vanDrop:'FCO',vanDropT:'~13:00'}
 };
 
 /* ---- itinerary data ---- */
@@ -588,8 +588,8 @@ dayData.forEach((d,idx)=>{
    const glyph=stay.kind==='flight'?'✈':'☾';
    const out=stay.out?`<span class="ev out">Check-out ${stay.out} · antes 10:00</span>`:'';
    const cin=stay.in?`<span class="ev in">Check-in ${stay.in} · desde 15:00</span>`:'';
-   const vpick=stay.vanPick?`<span class="ev van">Recogida van · ${stay.vanPick}</span>`:'';
-   const vdrop=stay.vanDrop?`<span class="ev van">Entrega van · ${stay.vanDrop}</span>`:'';
+   const vpick=stay.vanPick?`<span class="ev van">Recogida van · ${stay.vanPick}${stay.vanPickT?' · '+stay.vanPickT:''}</span>`:'';
+   const vdrop=stay.vanDrop?`<span class="ev van">Entrega van · ${stay.vanDrop}${stay.vanDropT?' · '+stay.vanDropT:''}</span>`:'';
    stayHtml=`<div class="stay" style="--sc:${sc}"><span class="bed">${glyph}</span><span class="where">${stay.where}</span>${out}${vpick}${cin}${vdrop}</div>`;
  }
  el.innerHTML=`
