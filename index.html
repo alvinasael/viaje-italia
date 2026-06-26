@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Italia en Familia · Roma + Toscana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+  :root{
+    --paper:#F2F4F1;
+    --card:#FCFDFB;
+    --ink:#161D2B;
+    --ink-soft:#515B6E;
+    --line:#DBE0DA;
+    --line-strong:#C3CABF;
+    --roma:#A8403A;
+    --toscana:#356A52;
+    --neutral:#5C6575;
+    --accent:#5C6575;
+    --shadow:0 1px 2px rgba(22,29,43,.05), 0 8px 28px rgba(22,29,43,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+  h1,h2,h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.05;margin:0}
+  a{color:inherit}
+
+  /* ---------- Masthead ---------- */
+  .masthead{padding:46px 0 30px;border-bottom:1px solid var(--line)}
+  .dossier-tag{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-soft);display:flex;gap:14px;flex-wrap:wrap;align-items:center
+  }
+  .dossier-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--roma);display:inline-block}
+  .dossier-tag .dot.g{background:var(--toscana)}
+  h1{font-size:clamp(34px,6vw,62px);margin:16px 0 6px}
+  h1 .a{color:var(--roma)} h1 .b{color:var(--toscana)}
+  .subtitle{font-size:18px;color:var(--ink-soft);max-width:62ch;margin:0}
+  .facts{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:28px
+  }
+  .fact{background:var(--card);padding:14px 16px}
+  .fact .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .fact .v{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:17px;margin-top:4px}
+  @media(max-width:760px){.facts{grid-template-columns:repeat(2,1fr)}}
+
+  /* ---------- Section scaffold ---------- */
+  section{padding:54px 0;border-bottom:1px solid var(--line)}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--accent);display:flex;align-items:center;gap:10px;margin-bottom:14px;transition:color .4s ease
+  }
+  .eyebrow::before{content:"";width:24px;height:2px;background:var(--accent);transition:background .4s ease}
+  h2{font-size:clamp(24px,3.4vw,34px)}
+  .lede{color:var(--ink-soft);max-width:64ch;margin:10px 0 0;font-size:16.5px}
+
+  /* ---------- Map / hero ---------- */
+  .map-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:22px 0 14px}
+  .base-switch{display:inline-flex;background:var(--card);border:1px solid var(--line-strong);border-radius:999px;padding:4px;gap:2px}
+  .base-switch button{
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.04em;border:0;background:transparent;
+    color:var(--ink-soft);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .2s ease;white-space:nowrap
+  }
+  .base-switch button:hover{color:var(--ink)}
+  .base-switch button.active{background:var(--accent);color:#fff}
+  .layer-toggles{display:flex;flex-wrap:wrap;gap:8px}
+  .layer-toggles label{
+    font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:7px;
+    background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer;user-select:none
+  }
+  .layer-toggles input{accent-color:var(--accent);width:14px;height:14px;margin:0}
+  #map{height:560px;width:100%;border:1px solid var(--line-strong);border-radius:12px;box-shadow:var(--shadow);background:#e9ece8;z-index:0}
+  @media(max-width:760px){#map{height:460px}}
+
+  .map-legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;font-size:13px;color:var(--ink-soft)}
+  .lg{display:inline-flex;align-items:center;gap:8px}
+  .lg .pin{width:13px;height:13px;border-radius:50%;border:2px solid var(--ink);background:#fff}
+  .lg .pin.sight{background:var(--ink);border-color:var(--ink)}
+  .lg .pin.transport{border-radius:3px;background:#fff;border-color:var(--accent)}
+  .lg .pin.zone{background:var(--accent);opacity:.28;border:1px dashed var(--accent)}
+
+  /* Leaflet custom markers */
+  .mk{display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace;font-weight:600}
+  .mk-sight{width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid #fff;box-shadow:0 0 0 1px var(--ink)}
+  .mk-transport{
+    width:22px;height:22px;border-radius:5px;background:#fff;border:2px solid var(--mkc,var(--neutral));
+    color:var(--mkc,var(--neutral));font-size:12px;box-shadow:var(--shadow)
+  }
+  .zone-label{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:#fff;background:var(--mkc,var(--neutral));padding:3px 8px;border-radius:6px;white-space:nowrap;
+    box-shadow:var(--shadow);font-weight:600;transform:translateY(-2px)
+  }
+  .leaflet-popup-content-wrapper{border-radius:10px;box-shadow:var(--shadow)}
+  .leaflet-popup-content{margin:13px 15px;font-family:"Inter",sans-serif;font-size:13.5px;line-height:1.5}
+  .pop-t{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:15px;display:block;margin-bottom:3px}
+  .pop-meta{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:6px}
+  .pop-time{display:inline-block;margin-top:7px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+
+  /* ---------- Itinerary ---------- */
+  .itin{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:24px}
+  @media(max-width:760px){.itin{grid-template-columns:1fr}}
+  .day{
+    background:var(--card);border:1px solid var(--line);border-left:3px solid var(--base,var(--neutral));
+    border-radius:10px;padding:15px 17px;display:flex;gap:14px;align-items:flex-start
+  }
+  .day .n{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13px;color:var(--base);min-width:46px;
+    font-variant-numeric:tabular-nums;letter-spacing:.02em;padding-top:2px}
+  .day .t{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15.5px;margin-bottom:2px}
+  .day .d{font-size:13.5px;color:var(--ink-soft)}
+
+  /* ---------- Costs ---------- */
+  .cost-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:24px 0 18px}
+  .cost-toggle{display:inline-flex;background:var(--card);border:1px solid var(--line-strong);border-radius:999px;padding:4px}
+  .cost-toggle button{font-family:"IBM Plex Mono",monospace;font-size:12.5px;border:0;background:transparent;color:var(--ink-soft);padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .2s}
+  .cost-toggle button.active{background:var(--ink);color:#fff}
+  .cost-total{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(22px,3vw,30px)}
+  .cost-total .lbl{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-weight:500;display:block;margin-bottom:2px}
+  .ctable{display:flex;flex-direction:column;gap:9px}
+  .crow{display:grid;grid-template-columns:200px 1fr 130px;gap:16px;align-items:center}
+  @media(max-width:680px){.crow{grid-template-columns:1fr;gap:5px}}
+  .crow .cname{font-size:14.5px;font-weight:500}
+  .crow .cbarwrap{height:26px;background:var(--card);border:1px solid var(--line);border-radius:6px;position:relative;overflow:hidden}
+  .crow .cbar{position:absolute;left:0;top:0;bottom:0;border-radius:5px 0 0 5px;background:linear-gradient(90deg,#3c4658,#5c6575);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .crow .crange{font-family:"IBM Plex Mono",monospace;font-size:13px;text-align:right;color:var(--ink)}
+  @media(max-width:680px){.crow .crange{text-align:left}}
+  .cnote{font-size:12.5px;color:var(--ink-soft);margin-top:14px}
+
+  /* ---------- Tours ---------- */
+  .tcols{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:24px}
+  @media(max-width:860px){.tcols{grid-template-columns:1fr}}
+  .tcol-h{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#fff;
+    display:inline-block;padding:5px 12px;border-radius:7px;margin-bottom:14px}
+  .tcol-h.roma{background:var(--roma)} .tcol-h.tos{background:var(--toscana)}
+  .tcard{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .tcard h3{font-size:16px;margin-bottom:4px}
+  .tcard .meta{font-size:13.5px;color:var(--ink-soft);margin:6px 0 10px}
+  .tcard .price{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:14px}
+  .tcard .ops{font-size:12.5px;color:var(--ink-soft);margin-top:9px}
+  .tcard .ops b{color:var(--ink);font-weight:600}
+  .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--line-strong);border-radius:999px;padding:2px 9px;color:var(--ink-soft);margin-left:8px;vertical-align:middle}
+  .disclaimer{font-size:12.5px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);border-left:3px solid var(--neutral);border-radius:8px;padding:13px 16px;margin-top:22px}
+
+  /* ---------- Notes + checklist ---------- */
+  .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:24px}
+  @media(max-width:860px){.doc-grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:18px 20px;box-shadow:var(--shadow)}
+  .panel h3{font-size:16px;margin-bottom:3px}
+  .panel .hint{font-size:12px;color:var(--ink-soft);font-family:"IBM Plex Mono",monospace;margin-bottom:14px}
+  .check{display:flex;align-items:flex-start;gap:11px;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .check:last-child{border-bottom:0}
+  .check input{margin-top:3px;width:16px;height:16px;accent-color:var(--toscana);flex-shrink:0}
+  .check label{font-size:14px;cursor:pointer}
+  .check input:checked + label{color:var(--ink-soft);text-decoration:line-through}
+  textarea{width:100%;min-height:190px;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:13px;
+    font-family:"Inter",sans-serif;font-size:14px;line-height:1.55;color:var(--ink);background:var(--paper)}
+  textarea:focus{outline:2px solid var(--accent);outline-offset:1px;background:#fff}
+  .saved{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--toscana);margin-top:8px;height:14px}
+
+  /* ---------- Practical notes ---------- */
+  .notes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:24px}
+  @media(max-width:680px){.notes-grid{grid-template-columns:1fr}}
+  .pnote{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .pnote .ph{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14.5px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .pnote .ph .sq{width:8px;height:8px;border-radius:2px;background:var(--accent)}
+  .pnote .pd{font-size:13.5px;color:var(--ink-soft)}
+
+  footer{padding:34px 0 60px;color:var(--ink-soft);font-size:12.5px}
+  footer .mono{font-size:11px;letter-spacing:.08em}
+
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease, transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+    .reveal{opacity:1;transform:none}
+    html{scroll-behavior:auto}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="dossier-tag">
+      <span><span class="dot"></span> Roma · 4 noches</span>
+      <span><span class="dot g"></span> Toscana · 5 noches</span>
+      <span>Dossier de planificación</span>
+      <span class="mono" id="updated"></span>
+    </div>
+    <h1>Italia en familia<br><span class="a">Roma</span> + <span class="b">Toscana</span></h1>
+    <p class="subtitle">Documento vivo para ir armando el viaje: dónde quedarse para no perder tiempo en carretera, qué visitar, cuánto cuesta por persona y qué tours empezar a cotizar.</p>
+    <div class="facts">
+      <div class="fact"><div class="k">Grupo</div><div class="v">6 personas</div></div>
+      <div class="fact"><div class="k">Duración</div><div class="v">~11 días · 9 noches</div></div>
+      <div class="fact"><div class="k">Ruta</div><div class="v">SJU → FCO</div></div>
+      <div class="fact"><div class="k">Temporada</div><div class="v">Fin sep – med oct</div></div>
+      <div class="fact"><div class="k">Esquema</div><div class="v">2 bases · van en Toscana</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== MAPA ===================== -->
+<section class="reveal">
+  <div class="wrap">
+    <div class="eyebrow">Mapa de planificación</div>
+    <h2>Lugares, zonas para quedarse y transporte</h2>
+    <p class="lede">Las <strong>burbujas</strong> son zonas candidatas para hospedarse (todavía sin sitio fijo), elegidas para minimizar traslados. Los marcadores cuadrados son nodos de transporte; los puntos sólidos, lugares a visitar. Cambia de base para acercar el mapa.</p>
+
+    <div class="map-toolbar">
+      <div class="base-switch" role="tablist" aria-label="Seleccionar base">
+        <button data-base="general" class="active" role="tab">Vista general</button>
+        <button data-base="roma" role="tab">Roma</button>
+        <button data-base="toscana" role="tab">Toscana</button>
+      </div>
+      <div class="layer-toggles">
+        <label><input type="checkbox" id="ly-sights" checked> Lugares</label>
+        <label><input type="checkbox" id="ly-zones" checked> Zonas p/ quedarse</label>
+        <label><input type="checkbox" id="ly-transport" checked> Transporte</label>
+        <label><input type="checkbox" id="ly-routes" checked> Rutas de día</label>
+      </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="map-legend">
+      <span class="lg"><span class="pin sight"></span> Lugar a visitar</span>
+      <span class="lg"><span class="pin transport"></span> Nodo de transporte (tren · metro · aeropuerto)</span>
+      <span class="lg"><span class="pin zone"></span> Zona candidata para hospedarse</span>
+      <span class="lg" style="font-family:'IBM Plex Mono',monospace;font-size:12px">— — rutas de día con tiempo aprox.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ITINERARIO ===================== -->
+<section class="reveal">
+  <div class="wrap">
+    <div class="eyebrow">Itinerario día por día</div>
+    <h2>Once días, dos bases</h2>
+    <p class="lede">Ritmo pausado pensado para 3 seniors y una bebé de 2 años: un solo "tramo fuerte" por día, con siesta al mediodía.</p>
+    <div class="itin" id="itin"></div>
+  </div>
+</section>
+
+<!-- ===================== COSTOS ===================== -->
+<section class="reveal">
+  <div class="wrap">
+    <div class="eyebrow">Costos estimados</div>
+    <h2>Presupuesto por persona</h2>
+    <p class="lede">Estimado para ~9 noches. Usa el selector para ver el costo por persona o el total del grupo de 6.</p>
+    <div class="cost-head">
+      <div class="cost-toggle" role="group" aria-label="Unidad de costo">
+        <button data-unit="pp" class="active">Por persona</button>
+        <button data-unit="grupo">Total grupo (6)</button>
+      </div>
+      <div class="cost-total">
+        <span class="lbl" id="ct-lbl">Total estimado · por persona</span>
+        <span id="ct-val" class="mono">$2,100 – $2,700</span>
+      </div>
+    </div>
+    <div class="ctable" id="ctable"></div>
+    <p class="cnote">Rangos del documento base. La bebé paga mucho menos en vuelos, así que el total real del grupo queda por debajo del cálculo lineal ×6. <strong>Palancas para abaratar:</strong> viajar en noviembre, cocinar varias cenas en el agriturismo, y reservar vuelos, van y entradas con anticipación.</p>
+  </div>
+</section>
+
+<!-- ===================== TOURS ===================== -->
+<section class="reveal">
+  <div class="wrap">
+    <div class="eyebrow">Tours y agencias</div>
+    <h2>Qué empezar a cotizar</h2>
+    <p class="lede">Puntos de partida con operadores reales y rangos de precio orientativos (investigados jun 2026). Marca cada uno como referencia: confirma precio, disponibilidad y accesibilidad para seniors antes de reservar.</p>
+    <div class="tcols">
+      <div>
+        <span class="tcol-h roma">Roma</span>
+        <div id="tours-roma"></div>
+      </div>
+      <div>
+        <span class="tcol-h tos">Toscana</span>
+        <div id="tours-tos"></div>
+      </div>
+    </div>
+    <p class="disclaimer"><strong>Nota.</strong> Precios indicativos por persona salvo donde se indique total/cotización. No hay afiliación con ningún operador. Para el Vaticano, compra siempre en el portal oficial <span class="mono">tickets.museivaticani.va</span> para evitar dominios falsos. Reserva con semanas de antelación: Vaticano, Coliseo y Uffizi/Academia agotan cupos por hora.</p>
+  </div>
+</section>
+
+<!-- ===================== DOCUMENTAR ===================== -->
+<section class="reveal">
+  <div class="wrap">
+    <div class="eyebrow">Documentar el plan</div>
+    <h2>Decisiones y notas</h2>
+    <p class="lede">Marca decisiones a medida que avanzas y guarda notas. Se guardan en este navegador (funciona al alojarlo en tu sitio; en la vista previa puede no persistir).</p>
+    <div class="doc-grid">
+      <div class="panel">
+        <h3>Decisiones pendientes</h3>
+        <div class="hint">checklist · se guarda local</div>
+        <div id="checklist"></div>
+      </div>
+      <div class="panel">
+        <h3>Bitácora del viaje</h3>
+        <div class="hint">notas libres · se guarda local</div>
+        <textarea id="notes" placeholder="Ej.: cotización de van automática 9 plazas, candidatos de apartamento en Prati, fechas exactas, links de agriturismos…"></textarea>
+        <div class="saved" id="saved-msg"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== NOTAS PRÁCTICAS ===================== -->
+<section class="reveal" style="border-bottom:0">
+  <div class="wrap">
+    <div class="eyebrow">Notas prácticas</div>
+    <h2>Para que todo fluya</h2>
+    <div class="notes-grid" id="pnotes"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="mono">PLAN-ITALIA · ROMA + TOSCANA · 6 PAX</div>
+    <p>Documento de planificación autocontenido. Mapa © OpenStreetMap, teselas © CARTO. Tiempos y distancias aproximados del itinerario base.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ---------------- Data ---------------- */
+const ROMA = "#A8403A", TOSCANA = "#356A52", NEUTRAL = "#5C6575";
+
+const places = {
+  roma:{
+    center:[41.9015,12.4660], zoom:13,
+    sights:[
+      {n:"Coliseo",c:[41.8902,12.4922],m:"Día 3 · Roma antigua",t:"Reserva por hora"},
+      {n:"Foro Romano y Palatino",c:[41.8925,12.4853],m:"Día 3",t:"Mucho de pie · descansos"},
+      {n:"Museos Vaticanos · Capilla Sixtina",c:[41.9065,12.4536],m:"Día 4 · Vaticano",t:"Primera hora · hay ascensores"},
+      {n:"Basílica de San Pedro",c:[41.9022,12.4539],m:"Día 4",t:""},
+      {n:"Castel Sant'Angelo",c:[41.9031,12.4663],m:"Día 4 · tarde",t:"Parque infantil al lado"},
+      {n:"Panteón",c:[41.8986,12.4769],m:"Día 5 · centro a pie",t:""},
+      {n:"Piazza Navona",c:[41.8992,12.4731],m:"Día 5",t:""},
+      {n:"Fontana di Trevi",c:[41.9009,12.4833],m:"Día 5",t:""},
+      {n:"Plaza de España",c:[41.9058,12.4823],m:"Día 5",t:""}
+    ],
+    transport:[
+      {n:"Metro Ottaviano",c:[41.9078,12.4565],g:"Ⓜ",m:"Línea A",t:"Junto a Prati y el Vaticano"},
+      {n:"Metro Lepanto",c:[41.9180,12.4660],g:"Ⓜ",m:"Línea A",t:"Borde norte de Prati"},
+      {n:"Roma Termini",c:[41.9009,12.5021],g:"▦",m:"Estación central",t:"Leonardo Express a FCO · trenes regionales"},
+      {n:"Aeropuerto FCO (Fiumicino)",c:[41.8003,12.2389],g:"✈",m:"Llegada / salida",t:"~45 min a Prati en taxi/transfer"}
+    ],
+    zones:[
+      {n:"Prati",c:[41.9080,12.4640],r:680,rec:true,m:"Zona recomendada",t:"Aceras anchas y planas (clave con coche de bebé y abuelos), tranquila de noche, a pasos del Vaticano y del metro A. Filtros: 3 hab, ascensor, A/C."},
+      {n:"Aventino / Testaccio",c:[41.8820,12.4760],r:620,rec:false,m:"Alternativa",t:"Más calmada si Prati se llena. Buen ambiente local, algo más lejos del Vaticano."}
+    ],
+    routes:[]
+  },
+  toscana:{
+    center:[43.40,11.45], zoom:9,
+    sights:[
+      {n:"Siena",c:[43.3188,11.3308],m:"Piazza del Campo · Duomo",t:"~30 min desde la base"},
+      {n:"Florencia",c:[43.7731,11.2560],m:"Day trip · Día 7",t:"Mejor en tren desde Siena (~1h30)"},
+      {n:"Pisa",c:[43.7230,10.3966],m:"Day trip · Día 9",t:"~1h30 · Torre, Duomo, Battistero"},
+      {n:"Lucca",c:[43.8430,10.5027],m:"Con Pisa",t:"Murallas renacentistas · menos gente"},
+      {n:"San Gimignano",c:[43.4677,11.0431],m:"Día 10",t:"~30–45 min · torres medievales"},
+      {n:"Monteriggioni",c:[43.3917,11.2233],m:"Chianti",t:"Pueblo amurallado · dentro de la zona base"},
+      {n:"Castellina in Chianti",c:[43.4708,11.2847],m:"Chianti",t:"Viñedos · paisaje del Chianti"},
+      {n:"Asciano",c:[43.2336,11.5614],m:"Crete Senesi",t:"Muy tranquilo · ondulado"},
+      {n:"Buonconvento",c:[43.1378,11.4817],m:"Crete Senesi",t:""},
+      {n:"Pienza",c:[43.0769,11.6786],m:"Val d'Orcia · Día 8",t:"~1h · pecorino, miradores"},
+      {n:"Montepulciano",c:[43.0920,11.7807],m:"Val d'Orcia",t:"Vino · trenecito turístico (evita cuestas)"},
+      {n:"Montalcino",c:[43.0589,11.4892],m:"Val d'Orcia",t:"Brunello di Montalcino"},
+      {n:"Bagno Vignoni",c:[43.0265,11.6177],m:"Val d'Orcia",t:"Aguas termales · ideal para los seniors"}
+    ],
+    transport:[
+      {n:"Estación de Siena",c:[43.3257,11.3215],g:"▦",m:"Tren regional",t:"A Florencia ~1h30 · evita ZTL y parqueo"},
+      {n:"Firenze Santa Maria Novella",c:[43.7764,11.2480],g:"▦",m:"Estación de Florencia",t:"Llegada en tren al centro"},
+      {n:"Chiusi – Chianciano Terme",c:[43.0758,11.9513],g:"▦",m:"Línea Roma–Florencia",t:"Nodo útil para el sur de la Toscana"}
+    ],
+    zones:[
+      {n:"Chianti (Monteriggioni–Castellina)",c:[43.42,11.255],r:9500,rec:true,m:"Zona base recomendada",t:"Viñedos y paisaje icónico. ~30 min de Siena/San Gimignano, ~1h de Florencia y de Val d'Orcia, ~1h30 de Pisa. Equilibra acceso a todo."},
+      {n:"Crete Senesi (Asciano–Buonconvento)",c:[43.185,11.520],r:9500,rec:false,m:"Alternativa más tranquila",t:"Lo más rural y silencioso. Algo más cerca de Val d'Orcia, algo más lejos de Pisa/Florencia."}
+    ],
+    routes:[
+      {to:[43.7731,11.2560],label:"~1h"},
+      {to:[43.7230,10.3966],label:"~1h30"},
+      {to:[43.4677,11.0431],label:"30–45min"},
+      {to:[43.3188,11.3308],label:"~30min"},
+      {to:[43.0769,11.6786],label:"~1h"}
+    ],
+    routeAnchor:[43.39,11.245]
+  }
+};
+
+const itinerary = [
+  {n:1,base:"r",t:"Vuelo SJU → Roma",d:"Vuelo nocturno (no hay directos; escala en EE.UU.). Se duerme en el avión."},
+  {n:2,base:"r",t:"Llegada a Roma · Prati",d:"Transfer directo al apartamento. Tarde tranquila: Via Cola di Rienzo, gelato, cena temprano. No recojas la van todavía."},
+  {n:3,base:"r",t:"Roma antigua",d:"Coliseo, Foro y Palatino por la mañana con reserva de hora. Almuerzo en Monti. Tarde libre / siesta."},
+  {n:4,base:"r",t:"Vaticano",d:"Museos + Capilla Sixtina + San Pedro (primera hora). Tarde: Castel Sant'Angelo y parque infantil para la nena."},
+  {n:5,base:"r",t:"Centro histórico a pie",d:"Panteón, Navona, Trevi, Plaza de España. Siesta al mediodía. Última cena romana. Empacar."},
+  {n:6,base:"t",t:"Roma → Toscana",d:"Recoge la van fuera de la ZTL (Termini o aeropuerto). ~2.5–3h al campo cerca de Siena. Check-in y tarde tranquila."},
+  {n:7,base:"t",t:"Florencia",d:"Mejor en tren desde Siena. Duomo, Ponte Vecchio, Signoria y Uffizi o Academia (David) con reserva."},
+  {n:8,base:"t",t:"Val d'Orcia",d:"Con la van: Pienza, Montepulciano, Bagno Vignoni (termas) y Montalcino. Distancias cortas, paisaje de postal."},
+  {n:9,base:"t",t:"Pisa + Lucca",d:"Pisa por la mañana (2–3h). Luego Lucca: murallas a pie o en bici (hay con sillita). Cena en Lucca."},
+  {n:10,base:"t",t:"Siena + San Gimignano",d:"Siena por la mañana, San Gimignano por la tarde. O día de descanso en el agriturismo (piscina, viñedos)."},
+  {n:11,base:"t",t:"Toscana → Roma → SJU",d:"Regreso a FCO (~3h), devolver la van y vuelo. Si el vuelo es temprano, considera dormir cerca de FCO."}
+];
+
+const costs = [
+  {n:"Vuelos SJU–FCO (ida y vuelta)",lo:750,hi:950},
+  {n:"Hospedaje (Roma + Toscana ÷6)",lo:450,hi:550},
+  {n:"Van + gasolina + peajes + parqueo",lo:200,hi:250},
+  {n:"Comida",lo:400,hi:550},
+  {n:"Entradas y actividades",lo:180,hi:250},
+  {n:"Trenes, transfers, varios",lo:120,hi:180}
+];
+
+const toursRoma = [
+  {t:"Vaticano + Coliseo · combo guiado (día completo)",meta:"Skip-the-line a ambos sitios en un día, con guía y traslado entre ellos.",price:"≈ $175–210 / persona",ops:"<b>The Roman Guy</b>, <b>City Wonders</b>, <b>Walks (Take Walks)</b> · markets: GetYourGuide, Viator, Tiqets",chip:"por verificar accesibilidad"},
+  {t:"Coliseo guiado · arena / subterráneos (medio día)",meta:"Acceso a niveles 1–2; opción arena o subterráneo.",price:"≈ €50–80 guiado · ticket STL ≈ €29",ops:"<b>LivTours</b>, <b>Through Eternity</b> · markets: GetYourGuide, Viator",chip:"reservar 2–3 sem antes"},
+  {t:"Museos Vaticanos · entrada oficial + guía",meta:"Entrada con franja horaria; guía privada familiar disponible.",price:"Entrada oficial ≈ €25 · guía privada aparte",ops:"Oficial: <b>tickets.museivaticani.va</b> · guías privadas locales",chip:"usar portal oficial"},
+  {t:"Roma privado · día completo con chofer y guía",meta:"Recogida en el hotel, transfers privados entre sitios. Cómodo para seniors y bebé.",price:"≈ $650–850 total grupo (según operador)",ops:"<b>Avventure Bellissime</b>, guías privados con vehículo",chip:"pedir cotización familia"}
+];
+const toursTos = [
+  {t:"Val d'Orcia · día completo desde Siena (grupo pequeño)",meta:"Pienza, Montepulciano y Montalcino con cata de Brunello.",price:"≈ $99+ / persona",ops:"markets: <b>GetYourGuide</b>, <b>Viator</b> · <b>Context Travel</b> (privado)",chip:"minivan ≤8"},
+  {t:"Chianti · medio día desde Siena (grupo pequeño)",meta:"Castellina in Chianti + cata de vino y aceite de oliva.",price:"≈ €85 / persona",ops:"<b>Winedering</b>, GetYourGuide · minivan hasta 8",chip:"media jornada"},
+  {t:"Val d'Orcia privado · Mercedes / van con recogida",meta:"Ruta a tu ritmo desde el agriturismo. Ideal grupo multigeneracional.",price:"Cotización (privado a medida)",ops:"<b>Montalcino Wine Tours</b>, <b>Context Travel</b>",chip:"a medida"},
+  {t:"Florencia con guía · Uffizi / Academia (David)",meta:"Entradas con reserva + guía. Llegada en tren desde Siena.",price:"Entradas + guía privada según grupo",ops:"markets: GetYourGuide, Viator · guías privados de Florencia",chip:"cupos por hora"}
+];
+
+const checklist = [
+  "Elegir y reservar apartamento en Prati (3 hab · ascensor · A/C)",
+  "Elegir agriturismo en la zona base (camas twin separables · planta baja p/ senior)",
+  "Reservar van 8–9 plazas automática + anotar 2 conductores",
+  "Comprar entradas: Vaticano, Coliseo y Uffizi/Academia (cupos por hora)",
+  "Fijar fechas exactas y comprar vuelos SJU–FCO",
+  "Decidir tours (combo Roma · Val d'Orcia · Chianti) y cotizar",
+  "Confirmar cuna/trona en el agriturismo y silla de auto homologada",
+  "Decidir si se duerme cerca de FCO la última noche"
+];
+
+const pnotes = [
+  {h:"Van",d:"Una 8–9 plazas automática es más cara y escasa: resérvala temprano y anota dos conductores."},
+  {h:"ZTL",d:"No entres con la van a los centros de Roma, Florencia, Siena ni Pisa (multas por cámara). Usa tren o parquea en las afueras."},
+  {h:"Ritmo seniors y bebé",d:"Un solo tramo fuerte por día, con siesta al mediodía. Entradas con hora para no hacer filas de pie."},
+  {h:"Bebé de 2 años",d:"Muchos agriturismos prestan cuna y trona — pídelo al reservar. Lleva o alquila silla de auto homologada."},
+  {h:"Termas",d:"Bagno Vignoni y los baños libres de la zona son un plus relajante para los mayores."},
+  {h:"Reservas clave",d:"Vaticano, Coliseo y Uffizi/Academia se agotan: compra con semanas de antelación."}
+];
+
+/* ---------------- Render static blocks ---------------- */
+document.getElementById('updated').textContent = "ACT. " + new Date().toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
+
+const itinEl = document.getElementById('itin');
+itinerary.forEach(d=>{
+  const color = d.base==="r"?ROMA:TOSCANA;
+  const el = document.createElement('div');
+  el.className='day'; el.style.setProperty('--base',color);
+  el.innerHTML = `<div class="n">DÍA ${d.n}</div><div><div class="t">${d.t}</div><div class="d">${d.d}</div></div>`;
+  itinEl.appendChild(el);
+});
+
+function renderTours(list, target){
+  const wrap = document.getElementById(target);
+  list.forEach(t=>{
+    const el=document.createElement('div'); el.className='tcard';
+    el.innerHTML=`<h3>${t.t}<span class="chip">${t.chip}</span></h3>
+      <div class="meta">${t.meta}</div>
+      <div class="price">${t.price}</div>
+      <div class="ops">${t.ops}</div>`;
+    wrap.appendChild(el);
+  });
+}
+renderTours(toursRoma,'tours-roma');
+renderTours(toursTos,'tours-tos');
+
+const pnEl=document.getElementById('pnotes');
+pnotes.forEach(p=>{
+  const el=document.createElement('div'); el.className='pnote';
+  el.innerHTML=`<div class="ph"><span class="sq"></span>${p.h}</div><div class="pd">${p.d}</div>`;
+  pnEl.appendChild(el);
+});
+
+/* ---------------- Costs ---------------- */
+const maxHi = Math.max(...costs.map(c=>c.hi));
+let unit='pp';
+const ctable=document.getElementById('ctable');
+function fmt(n){return '$'+n.toLocaleString('en-US');}
+function renderCosts(){
+  const mult = unit==='pp'?1:6;
+  ctable.innerHTML='';
+  costs.forEach(c=>{
+    const w = (c.hi/maxHi*100).toFixed(1);
+    const row=document.createElement('div'); row.className='crow';
+    row.innerHTML=`<div class="cname">${c.n}</div>
+      <div class="cbarwrap"><div class="cbar" style="width:0%"></div></div>
+      <div class="crange mono">${fmt(c.lo*mult)} – ${fmt(c.hi*mult)}</div>`;
+    ctable.appendChild(row);
+    requestAnimationFrame(()=>{row.querySelector('.cbar').style.width=w+'%';});
+  });
+  const loT=costs.reduce((s,c)=>s+c.lo,0)*mult, hiT=costs.reduce((s,c)=>s+c.hi,0)*mult;
+  document.getElementById('ct-val').textContent=`${fmt(loT)} – ${fmt(hiT)}`;
+  document.getElementById('ct-lbl').textContent= unit==='pp'?'Total estimado · por persona':'Total estimado · grupo de 6';
+}
+document.querySelectorAll('.cost-toggle button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.cost-toggle button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); unit=b.dataset.unit; renderCosts();
+  });
+});
+renderCosts();
+
+/* ---------------- Map ---------------- */
+let map=null;
+try{
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+map = L.map('map',{scrollWheelZoom:false,zoomControl:true}).setView([42.6,11.95],7);
+L.tileLayer('https://{s}.basemap.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap · © CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+map.on('click',()=>map.scrollWheelZoom.enable());
+map.on('mouseout',()=>map.scrollWheelZoom.disable());
+
+const layers = {
+  sights:L.layerGroup().addTo(map),
+  zones:L.layerGroup().addTo(map),
+  transport:L.layerGroup().addTo(map),
+  routes:L.layerGroup().addTo(map)
+};
+
+function sightIcon(){return L.divIcon({className:'',html:'<div class="mk mk-sight"></div>',iconSize:[14,14],iconAnchor:[7,7]});}
+function transportIcon(g,color){return L.divIcon({className:'',html:`<div class="mk mk-transport" style="--mkc:${color}">${g}</div>`,iconSize:[22,22],iconAnchor:[11,11]});}
+function zoneLabel(text,color){return L.divIcon({className:'',html:`<div class="zone-label" style="--mkc:${color}">${text}</div>`,iconSize:[1,1],iconAnchor:[0,0]});}
+
+function popup(p){
+  return `<span class="pop-t">${p.n}</span>`+
+    (p.m?`<span class="pop-meta">${p.m}</span>`:'')+
+    (p.t?`<span>${p.t}</span>`:'')+
+    (p.time?`<span class="pop-time">${p.time}</span>`:'');
+}
+
+function drawBase(key){
+  Object.values(layers).forEach(l=>l.clearLayers());
+  const set = places[key] || null;
+  const both = key==='general';
+  const sets = both?['roma','toscana']:[key];
+
+  sets.forEach(sk=>{
+    const data=places[sk];
+    const accent = sk==='roma'?ROMA:TOSCANA;
+
+    data.sights.forEach(p=>{
+      L.marker(p.c,{icon:sightIcon()}).bindPopup(popup(p),{closeButton:false}).addTo(layers.sights)
+       .bindTooltip(p.n,{direction:'top',offset:[0,-8],className:'mk-tt'});
+    });
+    data.transport.forEach(p=>{
+      L.marker(p.c,{icon:transportIcon(p.g,accent)}).bindPopup(popup(p),{closeButton:false}).addTo(layers.transport);
+    });
+    data.zones.forEach(z=>{
+      L.circle(z.c,{radius:z.r,color:accent,weight:z.rec?2:1.5,opacity:.9,
+        dashArray:z.rec?null:'5,5',fillColor:accent,fillOpacity:z.rec?.18:.10})
+        .bindPopup(popup(z),{closeButton:false}).addTo(layers.zones);
+      L.marker(z.c,{icon:zoneLabel(z.n,accent),interactive:false}).addTo(layers.zones);
+    });
+    (data.routes||[]).forEach(r=>{
+      const a=data.routeAnchor;
+      L.polyline([a,r.to],{color:accent,weight:1.5,opacity:.55,dashArray:'4,7'}).addTo(layers.routes);
+      const mid=[(a[0]+r.to[0])/2,(a[1]+r.to[1])/2];
+      L.marker(mid,{icon:L.divIcon({className:'',html:`<div class="pop-time" style="font-size:10.5px;padding:1px 6px">${r.label}</div>`,iconSize:[1,1]}),interactive:false}).addTo(layers.routes);
+    });
+  });
+
+  if(both){
+    map.flyToBounds([[41.6,10.2],[44.0,12.6]],{padding:[30,30],duration:reduce?0:.8});
+  }else{
+    map.flyTo(set.center,set.zoom,{duration:reduce?0:.8});
+  }
+  applyLayerToggles();
+}
+
+function applyLayerToggles(){
+  [['ly-sights','sights'],['ly-zones','zones'],['ly-transport','transport'],['ly-routes','routes']].forEach(([id,key])=>{
+    const on=document.getElementById(id).checked;
+    if(on){ if(!map.hasLayer(layers[key])) map.addLayer(layers[key]); }
+    else { if(map.hasLayer(layers[key])) map.removeLayer(layers[key]); }
+  });
+}
+['ly-sights','ly-zones','ly-transport','ly-routes'].forEach(id=>document.getElementById(id).addEventListener('change',applyLayerToggles));
+
+document.querySelectorAll('.base-switch button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.base-switch button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const base=b.dataset.base;
+    const accent = base==='roma'?ROMA: base==='toscana'?TOSCANA: NEUTRAL;
+    document.documentElement.style.setProperty('--accent',accent);
+    drawBase(base);
+  });
+});
+drawBase('general');
+}catch(err){
+  console.error('Mapa:',err);
+  const _m=document.getElementById('map');
+  if(_m){_m.style.display='flex';_m.style.alignItems='center';_m.style.justifyContent='center';_m.style.textAlign='center';_m.style.padding='24px';
+    _m.innerHTML='<div style="max-width:44ch;color:var(--ink-soft);font-size:14px;line-height:1.5">No se pudo cargar el mapa interactivo (revisa la conexión a internet). El resto del plan —itinerario, costos, tours y notas— sigue disponible más abajo.</div>';}
+}
+
+/* ---------------- Local persistence (safe wrapper) ---------------- */
+const store={
+  get(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+  set(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+};
+
+const clEl=document.getElementById('checklist');
+const savedChecks = (()=>{try{return JSON.parse(store.get('italia_checks')||'{}');}catch(e){return {};}})();
+checklist.forEach((c,i)=>{
+  const id='chk'+i;
+  const row=document.createElement('div'); row.className='check';
+  const checked = savedChecks[i]?'checked':'';
+  row.innerHTML=`<input type="checkbox" id="${id}" ${checked}><label for="${id}">${c}</label>`;
+  clEl.appendChild(row);
+  row.querySelector('input').addEventListener('change',e=>{
+    savedChecks[i]=e.target.checked; store.set('italia_checks',JSON.stringify(savedChecks));
+  });
+});
+
+const notes=document.getElementById('notes');
+const savedMsg=document.getElementById('saved-msg');
+notes.value = store.get('italia_notes')||'';
+let tmo;
+notes.addEventListener('input',()=>{
+  clearTimeout(tmo);
+  tmo=setTimeout(()=>{
+    store.set('italia_notes',notes.value);
+    savedMsg.textContent='✓ guardado';
+    setTimeout(()=>savedMsg.textContent='',1500);
+  },500);
+});
+
+/* ---------------- Reveal on scroll ---------------- */
+const io=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+setTimeout(()=>{if(map)map.invalidateSize();},300);
+</script>
+</body>
+</html>
