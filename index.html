@@ -152,6 +152,13 @@
   .hb-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:22px 0 16px}
   .hb-reset{font-family:"IBM Plex Mono",monospace;font-size:12px;border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);border-radius:999px;padding:8px 14px;cursor:pointer}
   .hb-reset:hover{color:var(--ink)}
+  .hb-planfilter{display:flex;gap:8px}
+  .planchk{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer;user-select:none}
+  .planchk input{width:14px;height:14px;margin:0;accent-color:var(--toscana)}
+  .planchk::after{content:"";width:9px;height:9px;border-radius:50%}
+  .planchk.a::after{background:var(--ink)}
+  .planchk.b::after{background:#fff;border:1.5px solid var(--line-strong)}
+  .hb-empty{background:var(--card);border:1px dashed var(--line-strong);border-radius:11px;padding:18px;text-align:center;color:var(--ink-soft);font-size:14px}
   .hb-weights{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
   @media(max-width:760px){.hb-weights{grid-template-columns:1fr 1fr}}
   @media(max-width:440px){.hb-weights{grid-template-columns:1fr}}
@@ -322,6 +329,10 @@
       <div class="base-switch" role="tablist" aria-label="Base de hospedaje">
         <button data-hb="roma" class="active" role="tab">Roma · Prati</button>
         <button data-hb="toscana" role="tab">Toscana</button>
+      </div>
+      <div class="hb-planfilter">
+        <label class="planchk a"><input type="checkbox" id="hb-plana" checked> Plan A</label>
+        <label class="planchk b"><input type="checkbox" id="hb-planb" checked> Plan B</label>
       </div>
       <button id="hb-reset" class="hb-reset">↺ Pesos por defecto</button>
     </div>
@@ -821,9 +832,12 @@ function hbRank(base){
   .sort((a,b)=>b.score-a.score);
 }
 const hbTableEl=document.getElementById('hb-table');
+function planChecked(plan){const el=document.getElementById(plan==='A'?'ly-plana':'ly-planb');return el?el.checked:true;}
 function hbRender(){
- const ranked=hbRank(hbBase), max=Math.max(...ranked.map(r=>r.score))||1;
- hbTableEl.innerHTML=ranked.map((r,i)=>{
+ const shown=hbRank(hbBase).filter(r=>planChecked(r.plan));
+ if(!shown.length){hbTableEl.innerHTML='<div class="hb-empty">Selecciona Plan A o Plan B para ver candidatos.</div>';return;}
+ const max=Math.max(...shown.map(r=>r.score))||1;
+ hbTableEl.innerHTML=shown.map((r,i)=>{
   const pp=Math.round(r.price/6), pc=r.plan==='A'?'pa':'pb';
   return `<div class="hb-row ${i===0?'top':''}"><span class="hb-rank">${i+1}</span>
    <div class="hb-main"><a class="hb-name" href="${r.url}" target="_blank" rel="noopener">${r.n} ▸</a>
@@ -846,6 +860,15 @@ document.querySelectorAll('[data-hb]').forEach(b=>b.addEventListener('click',()=
  document.querySelectorAll('[data-hb]').forEach(x=>x.classList.remove('active'));
  b.classList.add('active'); hbBase=b.dataset.hb; hbRender();
 }));
+/* Plan A/B filter linked between matrix and map */
+[['hb-plana','ly-plana'],['hb-planb','ly-planb']].forEach(([h,m])=>{
+ const he=document.getElementById(h);
+ he.addEventListener('change',()=>{const me=document.getElementById(m);if(me){me.checked=he.checked;me.dispatchEvent(new Event('change'));}else{hbRender();}});
+});
+[['ly-plana','hb-plana'],['ly-planb','hb-planb']].forEach(([m,h])=>{
+ const me=document.getElementById(m);
+ if(me) me.addEventListener('change',()=>{const he=document.getElementById(h);if(he)he.checked=me.checked;hbRender();});
+});
 document.getElementById('hb-reset').addEventListener('click',()=>{
  hbWeights={...hbDefault};
  document.querySelectorAll('#hb-weights label').forEach(l=>{l.querySelector('input').value=hbDefault[l.dataset.k];});
