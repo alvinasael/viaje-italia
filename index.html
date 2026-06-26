@@ -68,7 +68,11 @@
   .mk-sight{width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid #fff;box-shadow:0 0 0 1px var(--ink)}
   .mk-transport{width:22px;height:22px;border-radius:5px;background:#fff;border:2px solid var(--mkc,var(--neutral));color:var(--mkc,var(--neutral));font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
   .mk-lodge{width:22px;height:22px;border-radius:6px;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:var(--shadow)}
+  .mk-anchor{width:26px;height:26px;border-radius:50%;border:2px dashed;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;box-shadow:var(--shadow)}
   .leaflet-tooltip.lodge-tt{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.02em;padding:2px 6px;border-radius:6px;border:1px solid;box-shadow:var(--shadow);background:#fff}
+  .leaflet-tooltip.lodge-in{color:#fff;background:var(--toscana);border-color:var(--toscana)}
+  .leaflet-tooltip.lodge-out{color:var(--neutral);background:#fff;border-color:var(--line-strong)}
+  .leaflet-tooltip.anchor-tt{color:var(--ink);background:#FFF7D6;border-color:#E4C84A;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
   .leaflet-tooltip.lodge-A{color:#fff;background:var(--ink);border-color:var(--ink)}
   .leaflet-tooltip.lodge-B{color:var(--ink);background:#fff;border-color:var(--line-strong)}
   .leaflet-tooltip.lodge-tt::before{display:none}
@@ -160,6 +164,9 @@
   .planchk.b::after{background:#fff;border:1.5px solid var(--line-strong)}
   .planchk.t::after{display:none}
   .ptag{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;border:1px solid var(--line-strong);color:var(--ink-soft);white-space:nowrap}
+  .dtag{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;white-space:nowrap}
+  .dtag.in{background:var(--toscana);color:#fff}
+  .dtag.out{background:#fff;color:var(--neutral);border:1px solid var(--line-strong)}
   .ptag.hotel{background:var(--ink);color:#fff;border-color:var(--ink)}
   .ptag.casa{background:#fff;color:var(--ink)}
   .hb-empty{background:var(--card);border:1px dashed var(--line-strong);border-radius:11px;padding:18px;text-align:center;color:var(--ink-soft);font-size:14px}
@@ -266,7 +273,7 @@
   <div class="wrap">
     <div class="eyebrow">Mapa de planificación</div>
     <h2>Lugares, zonas para quedarse y transporte</h2>
-    <p class="lede">Las <strong>burbujas</strong> son zonas candidatas para hospedarse, divididas en <strong>Plan A</strong> y <strong>Plan B</strong> según dónde se concentran las mejores opciones. Los pines de <strong>hospedaje</strong> son candidatos reales de <strong>Expedia</strong> (★ hotel · ⌂ casa, con enlace). Usa los checkboxes <strong>Plan A/B</strong> y <strong>Hotel/Casa</strong> para filtrar. Cuadrados = transporte; puntos sólidos = lugares a visitar. Cambia de base para acercar el mapa.</p>
+    <p class="lede">El <strong>✛ punto óptimo</strong> es el centro de gravedad ponderado de los lugares que vas a visitar (mediana geométrica robusta), y el <strong>círculo</strong> acota la mitad más céntrica de los candidatos — ambos derivados de los datos, no dibujados a mano. Los pines de <strong>hospedaje</strong> son candidatos reales de <strong>Expedia</strong> (★ hotel · ⌂ casa): <strong>rellenos = dentro del radio óptimo</strong>, huecos = fuera. Filtra por <strong>Hotel/Casa</strong> y muestra/oculta la <strong>zona óptima</strong>. Cuadrados = transporte; puntos sólidos = lugares a visitar.</p>
     <div class="map-toolbar">
       <div class="base-switch" role="tablist" aria-label="Seleccionar base">
         <button data-base="general" class="active" role="tab">Vista general</button>
@@ -277,8 +284,7 @@
         <label><input type="checkbox" id="ly-sights" checked> Lugares</label>
         <label><input type="checkbox" id="ly-transport" checked> Transporte</label>
         <label><input type="checkbox" id="ly-routes" checked> Rutas</label>
-        <label class="ly-plan a"><input type="checkbox" id="ly-plana" checked> Plan A</label>
-        <label class="ly-plan b"><input type="checkbox" id="ly-planb" checked> Plan B</label>
+        <label class="ly-type"><input type="checkbox" id="ly-optimal" checked> ✛ Zona óptima</label>
         <label class="ly-type"><input type="checkbox" id="ly-hotel" checked> ★ Hotel</label>
         <label class="ly-type"><input type="checkbox" id="ly-casa" checked> ⌂ Casa</label>
       </div>
@@ -287,7 +293,7 @@
     <div class="map-legend">
       <span class="lg"><span class="pin sight"></span> Lugar a visitar</span>
       <span class="lg"><span class="pin transport"></span> Transporte (tren · metro · aeropuerto)</span>
-      <span class="lg"><span class="pin zone"></span> Zona Plan A (sólida) / Plan B (punteada)</span>
+      <span class="lg"><span class="pin zone"></span> ✛ Punto óptimo + círculo (radio derivado)</span>
       <span class="lg"><span class="pin lodge"></span> Hospedaje Expedia · ★ hotel / ⌂ casa — filtra arriba</span>
     </div>
   </div>
@@ -333,7 +339,7 @@
   <div class="wrap">
     <div class="eyebrow">Hospedaje óptimo</div>
     <h2>Matriz de decisión · ajusta los pesos</h2>
-    <p class="lede">Ranking de candidatos reales de <strong>Expedia</strong> (precios totales, 6 personas, fin de sep 2026) según tus cinco criterios. Filtra por <strong>Plan A/B</strong> y <strong>Hotel/Casa</strong> (sincronizado con el mapa), mueve los pesos y el ranking se recalcula en vivo.</p>
+    <p class="lede">Ranking de candidatos reales de <strong>Expedia</strong> (precios totales, 6 personas, fin de sep 2026). <em>Cercanía</em> = distancia al <strong>✛ punto óptimo</strong> (centro de gravedad ponderado de lo que visitarás). Cada fila indica los <strong>km al óptimo</strong> y si está <strong>dentro (●)</strong> o fuera (○) del radio. Filtra por <strong>Hotel/Casa</strong> (sincronizado con el mapa), mueve los pesos y el ranking se recalcula en vivo.</p>
 
     <div class="hb-bar">
       <div class="base-switch" role="tablist" aria-label="Base de hospedaje">
@@ -341,8 +347,6 @@
         <button data-hb="toscana" role="tab">Toscana</button>
       </div>
       <div class="hb-planfilter">
-        <label class="planchk a"><input type="checkbox" id="hb-plana" checked> Plan A</label>
-        <label class="planchk b"><input type="checkbox" id="hb-planb" checked> Plan B</label>
         <label class="planchk t"><input type="checkbox" id="hb-hotel" checked> ★ Hotel</label>
         <label class="planchk t"><input type="checkbox" id="hb-casa" checked> ⌂ Casa</label>
       </div>
@@ -350,7 +354,7 @@
     </div>
 
     <div class="hb-weights" id="hb-weights">
-      <label data-k="loc"><span class="wl">Cercanía a lugares <output>25%</output></span><input type="range" min="0" max="40" value="25"></label>
+      <label data-k="loc"><span class="wl">Cercanía al óptimo <output>25%</output></span><input type="range" min="0" max="40" value="25"></label>
       <label data-k="trans"><span class="wl">Transporte <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
       <label data-k="rating"><span class="wl">Rating <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
       <label data-k="rev"><span class="wl">Reseñas <output>15%</output></span><input type="range" min="0" max="40" value="15"></label>
@@ -360,11 +364,11 @@
     <div class="hb-table" id="hb-table"></div>
 
     <div class="hb-scenarios">
-      <div class="scen"><div class="sh">Premium · hoteles</div><div class="sc"><a href="https://www.expedia.com/.h1443366.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Trianon Borgo Pio</a> + <a href="https://www.expedia.com/.h2693499.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Villa Scacciapensieri</a></div><div class="sp mono">~$1,413 / pers</div></div>
-      <div class="scen best"><div class="sh">Balanceado · recomendado</div><div class="sc"><a href="https://www.expedia.com/.h48855405.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">St. Peter mirror</a> + <a href="https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Podere il Pino</a></div><div class="sp mono">~$623 / pers</div></div>
-      <div class="scen"><div class="sh">Valor · casas</div><div class="sc"><a href="https://www.expedia.com/.h28946343.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Casa Ripetta</a> + <a href="https://www.expedia.com/.h22586946.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Lilla</a></div><div class="sp mono">~$493 / pers</div></div>
+      <div class="scen"><div class="sh">Más céntrico · valor</div><div class="sc"><a href="https://www.expedia.com/.h28946343.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Casa Ripetta</a> + <a href="https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Podere il Pino</a></div><div class="sp mono">~$483 / pers · dentro del radio</div></div>
+      <div class="scen best"><div class="sh">Equilibrado · recomendado</div><div class="sc"><a href="https://www.expedia.com/.h92782478.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Elegant 3BR</a> + <a href="https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Podere il Pino</a></div><div class="sp mono">~$523 / pers · alto rating + céntrico</div></div>
+      <div class="scen"><div class="sh">Hoteles · comodidad</div><div class="sc"><a href="https://www.expedia.com/.h1443366.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Trianon Borgo Pio</a> + <a href="https://www.expedia.com/.h2693499.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Villa Scacciapensieri</a></div><div class="sp mono">~$1,413 / pers · servicios (más lejos)</div></div>
     </div>
-    <p class="disclaimer"><strong>Metodología.</strong> Cada criterio se normaliza (min–max) dentro de cada base y se pondera con los pesos de arriba. <em>Cercanía</em> = distancia a los lugares de los días (al Vaticano en Roma; promedio a Florencia/Siena/San Gim./Pisa/Lucca/Val d'Orcia en Toscana). <em>Transporte</em> = al metro Línea A (Roma) o a la estación de Siena (Toscana). <em>Experiencia</em> combina servicios/espacio (hotel = recepción y limpieza diaria; casa = cocina y habitaciones separadas, ideal con bebé) y valor. Precios y reseñas vía Expedia; en Prati hay pocos hoteles (Trianon destaca) y en la Toscana las mejores opciones familiares son agriturismi y borghi. Verifica 3 habitaciones reales, A/C y planta baja antes de reservar.</p>
+    <p class="disclaimer"><strong>Metodología.</strong> Primero fijo el <em>punto óptimo</em> por base = <strong>mediana geométrica ponderada</strong> (punto de Weber, robusto a outliers) de los lugares a visitar, con pesos por frecuencia/noches (Florencia ×2; Val d'Orcia y centro storico por su día completo). El <em>radio</em> se deriva: encierra la mitad más céntrica de los candidatos. Luego cada criterio se normaliza (min–max) y se pondera: <em>Cercanía</em> = distancia a ese óptimo; <em>Transporte</em> = al metro Línea A (Roma) o estación de Siena (Toscana); <em>Experiencia</em> = servicios/espacio (hotel = recepción y limpieza; casa = cocina y cuartos separados, ideal con bebé) + valor. Distancia recta (haversine). Nota: en Roma el óptimo cae en el centro storico, así que el este de Prati puntúa más alto en cercanía; el lado del Vaticano queda algo fuera del radio pero a pasos de San Pedro. Verifica 3 habitaciones reales, A/C y planta baja antes de reservar.</p>
   </div>
 </section>
 
@@ -645,8 +649,8 @@ const toursTos=[
 ];
 
 const checklist=[
- "Decidir zona en Roma (Plan A Prati–Vaticano vs Plan B Prati–Lepanto) y reservar en Expedia",
- "Decidir zona en Toscana (Plan A Val d'Elsa vs Plan B cerca de Siena) y reservar casa/agriturismo en Expedia",
+ "Roma: elegir hospedaje dentro del radio óptimo (Prati este/centro) y reservar en Expedia",
+ "Toscana: elegir hospedaje dentro del radio óptimo (Val d'Elsa, ponderando Florencia) y reservar en Expedia",
  "Reservar van 8–9 plazas automática + anotar 2 conductores",
  "Comprar entradas: Vaticano, Coliseo y Uffizi/Academia",
  "Fijar fechas exactas y comprar vuelos SJU–FCO",
@@ -808,8 +812,8 @@ const lodgeData={
  ]
 };
 const hbAnchor={
- roma:{targets:null,loc:[41.9065,12.4536],trans:[[41.9078,12.4565],[41.9180,12.4660]]},
- toscana:{targets:[[43.7731,11.2560],[43.3188,11.3308],[43.4677,11.0431],[43.7230,10.3966],[43.8430,10.5027],[43.0769,11.6786]],loc:null,trans:[[43.3257,11.3215]]}
+ roma:{c:[41.9011,12.4789],r:1.36,trans:[[41.9078,12.4565],[41.9180,12.4660]]},
+ toscana:{c:[43.5322,11.1098],r:12.34,trans:[[43.3257,11.3215]]}
 };
 function hbHav(a,b){const R=6371,r=Math.PI/180;const dLa=(b[0]-a[0])*r,dLo=(b[1]-a[1])*r;const h=Math.sin(dLa/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
 function hbMM(arr,benefit){const lo=Math.min(...arr),hi=Math.max(...arr);return arr.map(v=>hi===lo?100:(benefit?(v-lo)/(hi-lo)*100:(hi-v)/(hi-lo)*100));}
@@ -817,28 +821,28 @@ const hbDefault={loc:25,trans:20,rating:20,rev:15,exp:20};
 let hbWeights={...hbDefault}, hbBase='roma';
 function hbRank(base){
  const rows=lodgeData[base], A=hbAnchor[base];
- const loc=rows.map(r=>A.targets?A.targets.reduce((s,t)=>s+hbHav(r.c,t),0)/A.targets.length:hbHav(r.c,A.loc));
+ const loc=rows.map(r=>hbHav(r.c,A.c));
  const tr=rows.map(r=>Math.min(...A.trans.map(t=>hbHav(r.c,t))));
  const locN=hbMM(loc,false), trN=hbMM(tr,false);
  const ratingN=hbMM(rows.map(r=>r.rating),true), revN=hbMM(rows.map(r=>Math.log10(r.reviews||1)),true);
  const amenN=hbMM(rows.map(r=>r.amen),true), valueN=hbMM(rows.map(r=>r.price),false);
  const expN=hbMM(amenN.map((a,i)=>0.6*a+0.4*valueN[i]),true);
  const tot=hbWeights.loc+hbWeights.trans+hbWeights.rating+hbWeights.rev+hbWeights.exp||1;
- return rows.map((r,i)=>({...r,score:(hbWeights.loc*locN[i]+hbWeights.trans*trN[i]+hbWeights.rating*ratingN[i]+hbWeights.rev*revN[i]+hbWeights.exp*expN[i])/tot}))
+ return rows.map((r,i)=>({...r,dist:loc[i],inside:loc[i]<=A.r,score:(hbWeights.loc*locN[i]+hbWeights.trans*trN[i]+hbWeights.rating*ratingN[i]+hbWeights.rev*revN[i]+hbWeights.exp*expN[i])/tot}))
   .sort((a,b)=>b.score-a.score);
 }
 const hbTableEl=document.getElementById('hb-table');
 function planChecked(plan){const el=document.getElementById(plan==='A'?'ly-plana':'ly-planb');return el?el.checked:true;}
 function typeCheckedM(t){const el=document.getElementById(t==='hotel'?'ly-hotel':'ly-casa');return el?el.checked:true;}
 function hbRender(){
- const shown=hbRank(hbBase).filter(r=>planChecked(r.plan)&&typeCheckedM(r.type));
- if(!shown.length){hbTableEl.innerHTML='<div class="hb-empty">Selecciona Plan A o Plan B para ver candidatos.</div>';return;}
+ const shown=hbRank(hbBase).filter(r=>typeCheckedM(r.type));
+ if(!shown.length){hbTableEl.innerHTML='<div class="hb-empty">Selecciona Hotel o Casa para ver candidatos.</div>';return;}
  const max=Math.max(...shown.map(r=>r.score))||1;
  hbTableEl.innerHTML=shown.map((r,i)=>{
-  const pp=Math.round(r.price/6), pc=r.plan==='A'?'pa':'pb';
+  const pp=Math.round(r.price/6);
   return `<div class="hb-row ${i===0?'top':''}"><span class="hb-rank">${i+1}</span>
    <div class="hb-main"><a class="hb-name" href="${r.url}" target="_blank" rel="noopener">${r.n} ▸</a>
-   <div class="hb-meta"><span class="ptag ${r.type}">${r.type==='hotel'?'★ Hotel':'⌂ Casa'}</span> <span class="plan ${pc}">Plan ${r.plan} · ${r.area}</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div>
+   <div class="hb-meta"><span class="ptag ${r.type}">${r.type==='hotel'?'★ Hotel':'⌂ Casa'}</span> <span class="dtag ${r.inside?'in':'out'}">${r.inside?'●':'○'} ${r.dist.toFixed(1)} km del óptimo</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div>
    <a class="hb-link" href="${r.url}" target="_blank" rel="noopener">Ver en Expedia ▸</a></div>
    <div class="hb-score"><div class="hb-bar-track"><div class="hb-bar-fill" style="width:${(r.score/max*100).toFixed(0)}%"></div></div><b>${r.score.toFixed(0)}</b></div></div>`;
  }).join('');
@@ -858,15 +862,6 @@ document.querySelectorAll('[data-hb]').forEach(b=>b.addEventListener('click',()=
  document.querySelectorAll('[data-hb]').forEach(x=>x.classList.remove('active'));
  b.classList.add('active'); hbBase=b.dataset.hb; hbRender();
 }));
-/* Plan A/B filter linked between matrix and map */
-[['hb-plana','ly-plana'],['hb-planb','ly-planb']].forEach(([h,m])=>{
- const he=document.getElementById(h);
- he.addEventListener('change',()=>{const me=document.getElementById(m);if(me){me.checked=he.checked;me.dispatchEvent(new Event('change'));}else{hbRender();}});
-});
-[['ly-plana','hb-plana'],['ly-planb','hb-planb']].forEach(([m,h])=>{
- const me=document.getElementById(m);
- if(me) me.addEventListener('change',()=>{const he=document.getElementById(h);if(he)he.checked=me.checked;hbRender();});
-});
 /* Hotel/Casa filter linked between matrix and map */
 [['hb-hotel','ly-hotel'],['hb-casa','ly-casa']].forEach(([h,m])=>{
  const he=document.getElementById(h);
@@ -890,7 +885,7 @@ try{
  carto(map);
  map.on('click',()=>map.scrollWheelZoom.enable());
  map.on('mouseout',()=>map.scrollWheelZoom.disable());
- const layers={sights:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),planA:L.layerGroup().addTo(map),planB:L.layerGroup().addTo(map),lodging:L.layerGroup().addTo(map)};
+ const layers={sights:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),optimal:L.layerGroup().addTo(map),lodging:L.layerGroup().addTo(map)};
  let lodgeMarkers=[];
 
  const sightIcon=()=>L.divIcon({className:'',html:'<div class="mk-sight"></div>',iconSize:[14,14],iconAnchor:[7,7]});
@@ -907,11 +902,9 @@ try{
    const data=places[sk], accent=sk==='roma'?ROMA:TOSCANA;
    data.sights.forEach(p=>L.marker(p.c,{icon:sightIcon()}).bindPopup(popup(p),{closeButton:false}).addTo(layers.sights).bindTooltip(p.n,{direction:'top',offset:[0,-8]}));
    data.transport.forEach(p=>L.marker(p.c,{icon:transportIcon(p.g,accent)}).bindPopup(popup(p),{closeButton:false}).addTo(layers.transport));
-   data.zones.forEach(z=>{
-    const zl=z.rec?layers.planA:layers.planB;
-    L.circle(z.c,{radius:z.r,color:accent,weight:z.rec?2:1.5,opacity:.9,dashArray:z.rec?null:'5,5',fillColor:accent,fillOpacity:z.rec?.16:.09}).bindPopup(popup(z),{closeButton:false}).addTo(zl);
-    L.marker(z.c,{icon:zoneLabel(z.n,accent),interactive:false}).addTo(zl);
-   });
+   const an=hbAnchor[sk];
+   L.circle(an.c,{radius:an.r*1000,color:accent,weight:1.6,opacity:.9,dashArray:'6,6',fillColor:accent,fillOpacity:.07,interactive:false}).addTo(layers.optimal);
+   L.marker(an.c,{icon:L.divIcon({className:'',html:`<div class="mk-anchor" style="color:${accent};border-color:${accent}">✛</div>`,iconSize:[26,26],iconAnchor:[13,13]})}).bindPopup(`<span class="pop-t">Punto óptimo · ${sk==='roma'?'Roma':'Toscana'}</span><span class="pop-meta">Centro de gravedad ponderado de los lugares a visitar (mediana geométrica). El círculo (~${an.r.toFixed(1)} km) acota la mitad más céntrica de los candidatos.</span>`,{closeButton:false}).addTo(layers.optimal).bindTooltip('Óptimo',{permanent:!both,direction:'top',offset:[0,-12],className:'lodge-tt anchor-tt'});
    if(!both){(data.routes||[]).forEach(r=>{
     const a=data.routeAnchor;
     L.polyline([a,r.to],{color:accent,weight:1.5,opacity:.5,dashArray:'4,7'}).addTo(layers.routes);
@@ -920,14 +913,15 @@ try{
    });}
    (lodgeData[sk]||[]).forEach(h=>{
     const pp=Math.round(h.price/6);
-    const bgA=h.plan==='A'?accent:'#fff', fgA=h.plan==='A'?'#fff':accent;
+    const dist=hbHav(h.c,an.c), inside=dist<=an.r;
+    const bg=inside?accent:'#fff', fg=inside?'#fff':'var(--neutral)', bd=inside?accent:'#B7BEC9';
     const glyph=h.type==='hotel'?'★':'⌂';
-    const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bgA};color:${fgA};border-color:${accent}">${glyph}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
-    const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">${h.type==='hotel'?'Hotel':'Casa'} · Plan ${h.plan} · ★${h.rating} (${h.reviews} reseñas) · $${pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Expedia ▸</a>`;
+    const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bg};color:${fg};border-color:${bd}">${glyph}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
+    const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">${h.type==='hotel'?'Hotel':'Casa'} · ${dist.toFixed(1)} km del óptimo ${inside?'(dentro del radio)':'(fuera)'} · ★${h.rating} (${h.reviews}) · $${pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Expedia ▸</a>`;
     const mk=L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false});
-    if(!both) mk.bindTooltip(h.lbl||h.n,{permanent:true,direction:'right',offset:[9,0],className:'lodge-tt lodge-'+h.plan});
+    if(!both) mk.bindTooltip(h.lbl||h.n,{permanent:true,direction:'right',offset:[9,0],className:'lodge-tt '+(inside?'lodge-in':'lodge-out')});
     else mk.bindTooltip(h.n,{direction:'top',offset:[0,-8]});
-    lodgeMarkers.push({mk,plan:h.plan,type:h.type});
+    lodgeMarkers.push({mk,type:h.type});
    });
   });
   if(both) map.flyToBounds([[41.6,10.2],[44.0,12.6]],{padding:[30,30],duration:reduce?0:.8});
@@ -937,17 +931,17 @@ try{
  function typeChecked(t){const el=document.getElementById(t==='hotel'?'ly-hotel':'ly-casa');return el?el.checked:true;}
  function refreshLodging(){
   layers.lodging.clearLayers();
-  lodgeMarkers.forEach(o=>{if(planChecked(o.plan)&&typeChecked(o.type))o.mk.addTo(layers.lodging);});
+  lodgeMarkers.forEach(o=>{if(typeChecked(o.type))o.mk.addTo(layers.lodging);});
  }
  function applyLayerToggles(){
-  [['ly-sights','sights'],['ly-transport','transport'],['ly-routes','routes'],['ly-plana','planA'],['ly-planb','planB']].forEach(([id,k])=>{
+  [['ly-sights','sights'],['ly-transport','transport'],['ly-routes','routes'],['ly-optimal','optimal']].forEach(([id,k])=>{
    const el=document.getElementById(id); if(!el) return; const on=el.checked;
    if(on){if(!map.hasLayer(layers[k]))map.addLayer(layers[k]);}else{if(map.hasLayer(layers[k]))map.removeLayer(layers[k]);}
   });
   refreshLodging();
  }
  window.__applyMapFilters=applyLayerToggles;
- ['ly-sights','ly-transport','ly-routes','ly-plana','ly-planb','ly-hotel','ly-casa'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',applyLayerToggles);});
+ ['ly-sights','ly-transport','ly-routes','ly-optimal','ly-hotel','ly-casa'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',applyLayerToggles);});
  document.querySelectorAll('.base-switch button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.base-switch button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
