@@ -178,6 +178,8 @@
   .hb-main{flex:1;min-width:0}
   .hb-name{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15px;text-decoration:none;color:var(--ink)}
   .hb-name:hover{text-decoration:underline}
+  .hb-link{display:inline-block;margin-top:6px;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--roma);text-decoration:none;border:1px solid var(--line-strong);border-radius:7px;padding:3px 9px}
+  .hb-link:hover{background:var(--roma);color:#fff;border-color:var(--roma)}
   .hb-meta{font-size:12px;color:var(--ink-soft);margin-top:3px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
   .hb-meta .plan{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 8px;font-weight:600;color:#fff}
   .hb-meta .plan.pa{background:var(--toscana)} .hb-meta .plan.pb{background:var(--neutral)}
@@ -192,6 +194,8 @@
   .scen .sh{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
   .scen.best .sh{color:var(--toscana)}
   .scen .sc{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:14.5px;margin:5px 0}
+  .scen .sc a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--roma)}
+  .scen .sc a:hover{color:var(--roma)}
   .scen .sp{font-size:15px;font-weight:600}
 
   /* Documentar */
@@ -356,9 +360,9 @@
     <div class="hb-table" id="hb-table"></div>
 
     <div class="hb-scenarios">
-      <div class="scen"><div class="sh">Premium · hoteles</div><div class="sc">Trianon Borgo Pio + Villa Scacciapensieri</div><div class="sp mono">~$1,413 / pers</div></div>
-      <div class="scen best"><div class="sh">Balanceado · recomendado</div><div class="sc">St. Peter mirror + Podere il Pino</div><div class="sp mono">~$623 / pers</div></div>
-      <div class="scen"><div class="sh">Valor · casas</div><div class="sc">Casa Ripetta + Lilla</div><div class="sp mono">~$493 / pers</div></div>
+      <div class="scen"><div class="sh">Premium · hoteles</div><div class="sc"><a href="https://www.expedia.com/.h1443366.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Trianon Borgo Pio</a> + <a href="https://www.expedia.com/.h2693499.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Villa Scacciapensieri</a></div><div class="sp mono">~$1,413 / pers</div></div>
+      <div class="scen best"><div class="sh">Balanceado · recomendado</div><div class="sc"><a href="https://www.expedia.com/.h48855405.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">St. Peter mirror</a> + <a href="https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Podere il Pino</a></div><div class="sp mono">~$623 / pers</div></div>
+      <div class="scen"><div class="sh">Valor · casas</div><div class="sc"><a href="https://www.expedia.com/.h28946343.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Casa Ripetta</a> + <a href="https://www.expedia.com/.h22586946.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Lilla</a></div><div class="sp mono">~$493 / pers</div></div>
     </div>
     <p class="disclaimer"><strong>Metodología.</strong> Cada criterio se normaliza (min–max) dentro de cada base y se pondera con los pesos de arriba. <em>Cercanía</em> = distancia a los lugares de los días (al Vaticano en Roma; promedio a Florencia/Siena/San Gim./Pisa/Lucca/Val d'Orcia en Toscana). <em>Transporte</em> = al metro Línea A (Roma) o a la estación de Siena (Toscana). <em>Experiencia</em> combina servicios/espacio (hotel = recepción y limpieza diaria; casa = cocina y habitaciones separadas, ideal con bebé) y valor. Precios y reseñas vía Expedia; en Prati hay pocos hoteles (Trianon destaca) y en la Toscana las mejores opciones familiares son agriturismi y borghi. Verifica 3 habitaciones reales, A/C y planta baja antes de reservar.</p>
   </div>
@@ -834,7 +838,8 @@ function hbRender(){
   const pp=Math.round(r.price/6), pc=r.plan==='A'?'pa':'pb';
   return `<div class="hb-row ${i===0?'top':''}"><span class="hb-rank">${i+1}</span>
    <div class="hb-main"><a class="hb-name" href="${r.url}" target="_blank" rel="noopener">${r.n} ▸</a>
-   <div class="hb-meta"><span class="ptag ${r.type}">${r.type==='hotel'?'★ Hotel':'⌂ Casa'}</span> <span class="plan ${pc}">Plan ${r.plan} · ${r.area}</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div></div>
+   <div class="hb-meta"><span class="ptag ${r.type}">${r.type==='hotel'?'★ Hotel':'⌂ Casa'}</span> <span class="plan ${pc}">Plan ${r.plan} · ${r.area}</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div>
+   <a class="hb-link" href="${r.url}" target="_blank" rel="noopener">Ver en Expedia ▸</a></div>
    <div class="hb-score"><div class="hb-bar-track"><div class="hb-bar-fill" style="width:${(r.score/max*100).toFixed(0)}%"></div></div><b>${r.score.toFixed(0)}</b></div></div>`;
  }).join('');
 }
