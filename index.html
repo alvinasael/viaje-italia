@@ -87,6 +87,12 @@
   .day-head[aria-expanded="true"] .chev{transform:rotate(180deg)}
   .day-body{padding:0 16px 16px;display:none}
   .day-body.open{display:block}
+  .stay{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:9px 16px;border-top:1px solid var(--line);background:var(--paper);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft)}
+  .stay .bed{color:var(--sc,var(--neutral));font-size:13px;line-height:1}
+  .stay .where{color:var(--ink);font-weight:500}
+  .stay .ev{font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;border-radius:999px;padding:3px 9px;font-weight:600;white-space:nowrap}
+  .stay .ev.in{color:#fff;background:var(--toscana)}
+  .stay .ev.out{color:var(--ink);background:#fff;border:1px solid var(--line-strong)}
   .day-body .desc{font-size:14.5px;color:var(--ink-soft);margin:2px 0 14px}
   .photos{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
   .photos figure{margin:0;flex:0 0 auto;width:240px;scroll-snap-align:start}
@@ -227,7 +233,7 @@
   <div class="wrap">
     <div class="eyebrow">Itinerario día por día</div>
     <h2>Once días, dos bases</h2>
-    <p class="lede">Toca cada día para ver fotos de lo que visitarán y un mapa: en días de traslado, la ruta punto a punto; en días de ciudad, los sitios ubicados.</p>
+    <p class="lede">Toca cada día para ver fotos de lo que visitarán y un mapa: en días de traslado, la ruta punto a punto; en días de ciudad, los sitios ubicados. Cada día muestra dónde se duerme y los check-in/out (horarios típicos, por confirmar con cada alojamiento).</p>
     <div class="itin" id="itin"></div>
   </div>
 </section>
@@ -391,6 +397,19 @@ const dayNav={
  9:{mode:'driving',coords:[C.base,C.pisa,C.lucca]},
  10:{mode:'driving',coords:[C.siena,C.sanGim]},
  11:{mode:'driving',coords:[C.base,C.fco]}
+};
+const stayByDay={
+ 1:{kind:'flight',where:'Noche en el avión'},
+ 2:{kind:'roma',where:'Prati · noche 1 de 4',in:'Prati'},
+ 3:{kind:'roma',where:'Prati · noche 2 de 4'},
+ 4:{kind:'roma',where:'Prati · noche 3 de 4'},
+ 5:{kind:'roma',where:'Prati · noche 4 de 4'},
+ 6:{kind:'toscana',where:'Agriturismo · noche 1 de 5',out:'Prati',in:'Agriturismo'},
+ 7:{kind:'toscana',where:'Agriturismo · noche 2 de 5'},
+ 8:{kind:'toscana',where:'Agriturismo · noche 3 de 5'},
+ 9:{kind:'toscana',where:'Agriturismo · noche 4 de 5'},
+ 10:{kind:'toscana',where:'Agriturismo · noche 5 de 5'},
+ 11:{kind:'flight',where:'Vuelo de regreso · sin noche',out:'Agriturismo'}
 };
 
 /* ---- itinerary data ---- */
@@ -561,6 +580,15 @@ dayData.forEach((d,idx)=>{
  const capTxt=isRoute?`Ruta de traslado${d.map.rlabel?' · '+d.map.rlabel:''}`:'Sitios del día ubicados en el mapa';
  const nav=dayNav[d.n];
  const navHtml=nav?`<div class="tlinks navlinks"><a href="${gmapsDir(nav.coords,nav.mode)}" target="_blank" rel="noopener">Abrir en Google Maps ▸</a><a href="${amapsDir(nav.coords,nav.mode)}" target="_blank" rel="noopener">Apple Maps ▸</a></div>`:'';
+ const stay=stayByDay[d.n];
+ let stayHtml='';
+ if(stay){
+   const sc=stay.kind==='roma'?ROMA:stay.kind==='toscana'?TOSCANA:NEUTRAL;
+   const glyph=stay.kind==='flight'?'✈':'☾';
+   const out=stay.out?`<span class="ev out">Check-out ${stay.out} · antes 10:00</span>`:'';
+   const cin=stay.in?`<span class="ev in">Check-in ${stay.in} · desde 15:00</span>`:'';
+   stayHtml=`<div class="stay" style="--sc:${sc}"><span class="bed">${glyph}</span><span class="where">${stay.where}</span>${out}${cin}</div>`;
+ }
  el.innerHTML=`
   <button class="day-head" aria-expanded="false" aria-controls="db${idx}">
     <span class="n">DÍA ${d.n}</span>
@@ -574,7 +602,8 @@ dayData.forEach((d,idx)=>{
     <div class="daymap" id="daymap${idx}"></div>
     <p class="map-cap"><span class="rk"></span>${capTxt}</p>
     ${navHtml}
-  </div>`;
+  </div>
+  ${stayHtml}`;
  itinEl.appendChild(el);
  const head=el.querySelector('.day-head'), body=el.querySelector('.day-body');
  head.addEventListener('click',()=>{
