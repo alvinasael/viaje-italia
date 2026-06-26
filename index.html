@@ -64,6 +64,10 @@
   .mk-sight{width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid #fff;box-shadow:0 0 0 1px var(--ink)}
   .mk-transport{width:22px;height:22px;border-radius:5px;background:#fff;border:2px solid var(--mkc,var(--neutral));color:var(--mkc,var(--neutral));font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
   .mk-lodge{width:22px;height:22px;border-radius:6px;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:var(--shadow)}
+  .leaflet-tooltip.lodge-tt{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.02em;padding:2px 6px;border-radius:6px;border:1px solid;box-shadow:var(--shadow);background:#fff}
+  .leaflet-tooltip.lodge-A{color:#fff;background:var(--ink);border-color:var(--ink)}
+  .leaflet-tooltip.lodge-B{color:var(--ink);background:#fff;border-color:var(--line-strong)}
+  .leaflet-tooltip.lodge-tt::before{display:none}
   .zone-label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--mkc,var(--neutral));padding:3px 7px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow);font-weight:600}
   .leaflet-popup-content-wrapper{border-radius:10px}
   .leaflet-popup-content{margin:12px 14px;font-family:"Inter",sans-serif;font-size:13px;line-height:1.5}
@@ -536,7 +540,7 @@ const dayData=[
 
 /* ---- main map data ---- */
 const places={
- roma:{center:[41.9015,12.4660],zoom:13,
+ roma:{center:[41.9068,12.4555],zoom:14,
   sights:[
    {n:"Coliseo",c:C.coliseo,m:"Día 3 · Roma antigua",t:"Reserva por hora"},
    {n:"Foro Romano y Palatino",c:C.foro,m:"Día 3",t:""},
@@ -556,12 +560,12 @@ const places={
    {n:"Plan A · Prati–Vaticano",c:[41.9068,12.4596],r:520,rec:true,m:"Plan A · junto al Vaticano",t:"Cluster pegado a San Pedro y Castel, a pasos del metro Ottaviano. Aquí: Rome Aparts, La Cupola, Suite Sarandrea, Home Domus."},
    {n:"Plan B · Prati–Museos",c:[41.9063,12.4485],r:520,rec:false,m:"Plan B · lado Museos/Metro",t:"Lado oeste, junto a la entrada de los Museos Vaticanos y metros Ottaviano/Cipro. Algo más económico: Tra i Musei, My Vatican Place."}],
   lodging:[
-   {n:"Rome Aparts",c:[41.906625,12.458409],plan:"A",rating:9.6,reviews:747,pp:409,url:"https://www.booking.com/hotel/it/s-peter-big-apart-in-front-of-dome.html"},
-   {n:"La Cupola Apartment",c:[41.906774,12.457663],plan:"A",rating:9.4,reviews:103,pp:248,url:"https://www.booking.com/hotel/it/la-cupola-apartment-roma.html"},
-   {n:"Suite Sarandrea",c:[41.90505,12.46017],plan:"A",rating:9.5,reviews:116,pp:267,url:"https://www.booking.com/hotel/it/suite-sarandrea.html"},
-   {n:"Home Domus Giulio Cesare",c:[41.909212,12.458293],plan:"A",rating:9.0,reviews:141,pp:167,url:"https://www.booking.com/hotel/it/home-domus-giulio-cesare-vatican-museum.html"},
-   {n:"Tra i Musei Vaticani",c:[41.907298,12.452497],plan:"B",rating:9.4,reviews:33,pp:164,url:"https://www.booking.com/hotel/it/vatican-city-apartment-roma2.html"},
-   {n:"My Vatican Place",c:[41.905109,12.444102],plan:"B",rating:9.1,reviews:295,pp:226,url:"https://www.booking.com/hotel/it/matteos-vatican-place.html"}]},
+   {n:"Rome Aparts",lbl:"Rome Aparts",c:[41.906625,12.458409],plan:"A",rating:9.6,reviews:747,pp:409,url:"https://www.booking.com/hotel/it/s-peter-big-apart-in-front-of-dome.html"},
+   {n:"Suite Sarandrea",lbl:"Suite Sarandrea",c:[41.90505,12.46017],plan:"A",rating:9.5,reviews:116,pp:267,url:"https://www.booking.com/hotel/it/suite-sarandrea.html"},
+   {n:"Home Domus Giulio Cesare",lbl:"Home Domus",c:[41.909212,12.458293],plan:"A",rating:9.0,reviews:141,pp:167,url:"https://www.booking.com/hotel/it/home-domus-giulio-cesare-vatican-museum.html"},
+   {n:"La Cupola Apartment",lbl:"La Cupola",c:[41.906774,12.4575],plan:"A",rating:9.4,reviews:103,pp:248,url:"https://www.booking.com/hotel/it/la-cupola-apartment-roma.html"},
+   {n:"Tra i Musei Vaticani",lbl:"Tra i Musei",c:[41.907298,12.452497],plan:"B",rating:9.4,reviews:33,pp:164,url:"https://www.booking.com/hotel/it/vatican-city-apartment-roma2.html"},
+   {n:"My Vatican Place",lbl:"My Vatican Pl.",c:[41.905109,12.444102],plan:"B",rating:9.1,reviews:295,pp:226,url:"https://www.booking.com/hotel/it/matteos-vatican-place.html"}]},
  toscana:{center:[43.40,11.45],zoom:9,
   sights:[
    {n:"Siena",c:C.siena,m:"Día 10",t:"~30 min desde la base"},
@@ -585,12 +589,12 @@ const places={
    {n:"Plan A · Val d'Elsa",c:[43.46,11.19],r:11000,rec:true,m:"Plan A · corredor Florencia–Siena",t:"Barberino, Poggibonsi y Colle di Val d'Elsa, sobre la superstrada SI-FI. Óptimo para Florencia, San Gimignano y Pisa. Aquí: Romitorio di Serelle, Casale di Villore, Cipresseta, Villetta."},
    {n:"Plan B · Casole–Sovicille",c:[43.31,11.16],r:10500,rec:false,m:"Plan B · más cerca de Siena",t:"Casole d'Elsa y Sovicille, al sur: más cerca de Siena y la Val d'Orcia, algo más lejos de Florencia. Aquí: Villa Mucellena, Le Mascie."}],
   lodging:[
-   {n:"Romitorio di Serelle",c:[43.494268,11.229583],plan:"A",rating:9.4,reviews:195,pp:382,url:"https://www.booking.com/hotel/it/romitorio-di-serelle.html"},
-   {n:"Casale di Villore",c:[43.468412,11.210363],plan:"A",rating:9.6,reviews:81,pp:492,url:"https://www.booking.com/hotel/it/casale-di-villore-poggibonsi.html"},
-   {n:"Tenuta la Cipresseta",c:[43.494316,11.197391],plan:"A",rating:9.4,reviews:67,pp:284,url:"https://www.booking.com/hotel/it/tenuta-la-cipresseta.html"},
-   {n:"Villetta indip. (Colle)",c:[43.417982,11.089116],plan:"A",rating:9.3,reviews:52,pp:168,url:"https://www.booking.com/hotel/it/villetta-parco-posiz-strategica.html"},
-   {n:"Villa Mucellena",c:[43.335421,11.181542],plan:"B",rating:9.0,reviews:206,pp:224,url:"https://www.booking.com/hotel/it/villa-mucellena-casole-d-39-elsa.html"},
-   {n:"Le Mascie",c:[43.283313,11.141928],plan:"B",rating:9.1,reviews:61,pp:296,url:"https://www.booking.com/hotel/it/le-mascie.html"}],
+   {n:"Romitorio di Serelle",lbl:"Romitorio",c:[43.494268,11.229583],plan:"A",rating:9.4,reviews:195,pp:382,url:"https://www.booking.com/hotel/it/romitorio-di-serelle.html"},
+   {n:"Casale di Villore",lbl:"Casale Villore",c:[43.468412,11.210363],plan:"A",rating:9.6,reviews:81,pp:492,url:"https://www.booking.com/hotel/it/casale-di-villore-poggibonsi.html"},
+   {n:"Tenuta la Cipresseta",lbl:"Cipresseta",c:[43.494316,11.197391],plan:"A",rating:9.4,reviews:67,pp:284,url:"https://www.booking.com/hotel/it/tenuta-la-cipresseta.html"},
+   {n:"Villetta indip. (Colle)",lbl:"Villetta Colle",c:[43.417982,11.089116],plan:"A",rating:9.3,reviews:52,pp:168,url:"https://www.booking.com/hotel/it/villetta-parco-posiz-strategica.html"},
+   {n:"Villa Mucellena",lbl:"Villa Mucellena",c:[43.335421,11.181542],plan:"B",rating:9.0,reviews:206,pp:224,url:"https://www.booking.com/hotel/it/villa-mucellena-casole-d-39-elsa.html"},
+   {n:"Le Mascie",lbl:"Le Mascie",c:[43.283313,11.141928],plan:"B",rating:9.1,reviews:61,pp:296,url:"https://www.booking.com/hotel/it/le-mascie.html"}],
   routes:[{to:C.duomoFI,label:"~1h"},{to:C.pisa,label:"~1h30"},{to:C.sanGim,label:"30–45m"},{to:C.siena,label:"~30m"},{to:C.pienza,label:"~1h15"}],
   routeAnchor:[43.44,11.19]}
 };
@@ -877,12 +881,14 @@ try{
     const mid=[(a[0]+r.to[0])/2,(a[1]+r.to[1])/2];
     L.marker(mid,{icon:L.divIcon({className:'',html:`<span class="rt-label">${r.label}</span>`,iconSize:[1,1]}),interactive:false}).addTo(layers.routes);
    });}
-   if(!both){(data.lodging||[]).forEach(h=>{
+   (data.lodging||[]).forEach(h=>{
     const bgA=h.plan==='A'?accent:'#fff', fgA=h.plan==='A'?'#fff':accent;
     const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bgA};color:${fgA};border-color:${accent}">⌂</div>`,iconSize:[22,22],iconAnchor:[11,11]});
     const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">Plan ${h.plan} · ★${h.rating} (${h.reviews} reseñas) · $${h.pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Booking ▸</a>`;
-    L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false}).addTo(layers.lodging).bindTooltip(h.n,{direction:'top',offset:[0,-8]});
-   });}
+    const mk=L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false}).addTo(layers.lodging);
+    if(!both) mk.bindTooltip(h.lbl||h.n,{permanent:true,direction:'right',offset:[9,0],className:'lodge-tt lodge-'+h.plan});
+    else mk.bindTooltip(h.n,{direction:'top',offset:[0,-8]});
+   });
   });
   if(both) map.flyToBounds([[41.6,10.2],[44.0,12.6]],{padding:[30,30],duration:reduce?0:.8});
   else map.flyTo(places[key].center,places[key].zoom,{duration:reduce?0:.8});
