@@ -66,6 +66,12 @@
   .lg .pin.lodge{background:var(--ink);border-color:var(--ink);border-radius:4px}
 
   .mk-sight{width:14px;height:14px;border-radius:50%;background:var(--ink);border:2px solid #fff;box-shadow:0 0 0 1px var(--ink)}
+  .leaflet-tooltip.photo-tt{padding:0;border:none;background:transparent;box-shadow:none;opacity:1}
+  .leaflet-tooltip.photo-tt::before{display:none}
+  .photo-card{width:182px;border-radius:11px;overflow:hidden;background:var(--card);box-shadow:0 8px 24px rgba(22,29,43,.22);border:1px solid var(--line)}
+  .photo-card img{display:block;width:100%;height:112px;object-fit:cover}
+  .pc-cap{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:12.5px;padding:7px 10px;color:var(--ink)}
+  .pop-img{display:block;width:100%;height:120px;object-fit:cover;border-radius:8px;margin:4px 0 7px}
   .mk-transport{width:22px;height:22px;border-radius:5px;background:#fff;border:2px solid var(--mkc,var(--neutral));color:var(--mkc,var(--neutral));font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
   .mk-lodge{width:22px;height:22px;border-radius:6px;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:var(--shadow)}
   .mk-anchor{width:26px;height:26px;border-radius:50%;border:2px dashed;background:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;box-shadow:var(--shadow)}
@@ -272,8 +278,8 @@
 <section id="mapa">
   <div class="wrap">
     <div class="eyebrow">Mapa de planificación</div>
-    <h2>Lugares, zonas para quedarse y transporte</h2>
-    <p class="lede">El <strong>✛ punto óptimo</strong> es el centro de gravedad ponderado de los lugares que vas a visitar (mediana geométrica robusta), y el <strong>círculo</strong> acota la mitad más céntrica de los candidatos — ambos derivados de los datos, no dibujados a mano. Los pines de <strong>hospedaje</strong> son candidatos reales de <strong>Expedia</strong> (★ hotel · ⌂ casa): <strong>rellenos = dentro del radio óptimo</strong>, huecos = fuera. Filtra por <strong>Hotel/Casa</strong> y muestra/oculta la <strong>zona óptima</strong>. Cuadrados = transporte; puntos sólidos = lugares a visitar.</p>
+    <h2>Lugares a visitar y transporte</h2>
+    <p class="lede">Mapa para <strong>planificar el viaje</strong>: cada <strong>punto sólido</strong> es un lugar a visitar — pasa el cursor (o tócalo en móvil) y verás <strong>su foto</strong>; ábrelo para la nota del día y el enlace a Maps. Los <strong>cuadrados</strong> son la red de transporte: ✈ aeropuerto, ▦ tren, Ⓜ metro. Cambia de base (Roma / Toscana) para acercar el mapa; las <strong>rutas</strong> muestran las excursiones de cada día.</p>
     <div class="map-toolbar">
       <div class="base-switch" role="tablist" aria-label="Seleccionar base">
         <button data-base="general" class="active" role="tab">Vista general</button>
@@ -284,17 +290,12 @@
         <label><input type="checkbox" id="ly-sights" checked> Lugares</label>
         <label><input type="checkbox" id="ly-transport" checked> Transporte</label>
         <label><input type="checkbox" id="ly-routes" checked> Rutas</label>
-        <label class="ly-type"><input type="checkbox" id="ly-optimal" checked> ✛ Zona óptima</label>
-        <label class="ly-type"><input type="checkbox" id="ly-hotel" checked> ★ Hotel</label>
-        <label class="ly-type"><input type="checkbox" id="ly-casa" checked> ⌂ Casa</label>
       </div>
     </div>
     <div id="map"></div>
     <div class="map-legend">
-      <span class="lg"><span class="pin sight"></span> Lugar a visitar</span>
-      <span class="lg"><span class="pin transport"></span> Transporte (tren · metro · aeropuerto)</span>
-      <span class="lg"><span class="pin zone"></span> ✛ Punto óptimo + círculo (radio derivado)</span>
-      <span class="lg"><span class="pin lodge"></span> Hospedaje Expedia · ★ hotel / ⌂ casa — filtra arriba</span>
+      <span class="lg"><span class="pin sight"></span> Lugar a visitar — hover para ver foto</span>
+      <span class="lg"><span class="pin transport"></span> Transporte · ✈ aeropuerto · ▦ tren · Ⓜ metro</span>
     </div>
   </div>
 </section>
@@ -331,44 +332,6 @@
       <tfoot><tr><td>Total estimado</td><td class="num" id="cf-lo"></td><td class="num" id="cf-hi"></td><td class="wcol"></td></tr></tfoot>
     </table>
     <p class="cnote">Rangos del documento base. La bebé paga mucho menos en vuelos, así que el total real del grupo queda por debajo del ×6 lineal. <strong>Palancas para abaratar:</strong> viajar en noviembre, cocinar cenas en el agriturismo, y reservar vuelos, van y entradas con anticipación.</p>
-  </div>
-</section>
-
-<!-- HOSPEDAJE -->
-<section id="hospedaje" class="reveal">
-  <div class="wrap">
-    <div class="eyebrow">Hospedaje óptimo</div>
-    <h2>Matriz de decisión · ajusta los pesos</h2>
-    <p class="lede">Ranking de candidatos reales de <strong>Expedia</strong> (precios totales, 6 personas, fin de sep 2026). <em>Cercanía</em> = distancia al <strong>✛ punto óptimo</strong> (centro de gravedad ponderado de lo que visitarás). Cada fila indica los <strong>km al óptimo</strong> y si está <strong>dentro (●)</strong> o fuera (○) del radio. Filtra por <strong>Hotel/Casa</strong> (sincronizado con el mapa), mueve los pesos y el ranking se recalcula en vivo.</p>
-
-    <div class="hb-bar">
-      <div class="base-switch" role="tablist" aria-label="Base de hospedaje">
-        <button data-hb="roma" class="active" role="tab">Roma · Prati</button>
-        <button data-hb="toscana" role="tab">Toscana</button>
-      </div>
-      <div class="hb-planfilter">
-        <label class="planchk t"><input type="checkbox" id="hb-hotel" checked> ★ Hotel</label>
-        <label class="planchk t"><input type="checkbox" id="hb-casa" checked> ⌂ Casa</label>
-      </div>
-      <button id="hb-reset" class="hb-reset">↺ Pesos por defecto</button>
-    </div>
-
-    <div class="hb-weights" id="hb-weights">
-      <label data-k="loc"><span class="wl">Cercanía al óptimo <output>25%</output></span><input type="range" min="0" max="40" value="25"></label>
-      <label data-k="trans"><span class="wl">Transporte <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
-      <label data-k="rating"><span class="wl">Rating <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
-      <label data-k="rev"><span class="wl">Reseñas <output>15%</output></span><input type="range" min="0" max="40" value="15"></label>
-      <label data-k="exp"><span class="wl">Experiencia <output>20%</output></span><input type="range" min="0" max="40" value="20"></label>
-    </div>
-
-    <div class="hb-table" id="hb-table"></div>
-
-    <div class="hb-scenarios">
-      <div class="scen"><div class="sh">Más céntrico · valor</div><div class="sc"><a href="https://www.expedia.com/.h28946343.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Casa Ripetta</a> + <a href="https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Podere il Pino</a></div><div class="sp mono">~$483 / pers · dentro del radio</div></div>
-      <div class="scen best"><div class="sh">Equilibrado · recomendado</div><div class="sc"><a href="https://www.expedia.com/.h92782478.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Elegant 3BR</a> + <a href="https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Podere il Pino</a></div><div class="sp mono">~$523 / pers · alto rating + céntrico</div></div>
-      <div class="scen"><div class="sh">Hoteles · comodidad</div><div class="sc"><a href="https://www.expedia.com/.h1443366.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Trianon Borgo Pio</a> + <a href="https://www.expedia.com/.h2693499.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP" target="_blank" rel="noopener">Villa Scacciapensieri</a></div><div class="sp mono">~$1,413 / pers · servicios (más lejos)</div></div>
-    </div>
-    <p class="disclaimer"><strong>Metodología.</strong> Primero fijo el <em>punto óptimo</em> por base = <strong>mediana geométrica ponderada</strong> (punto de Weber, robusto a outliers) de los lugares a visitar, con pesos por frecuencia/noches (Florencia ×2; Val d'Orcia y centro storico por su día completo). El <em>radio</em> se deriva: encierra la mitad más céntrica de los candidatos. Luego cada criterio se normaliza (min–max) y se pondera: <em>Cercanía</em> = distancia a ese óptimo; <em>Transporte</em> = al metro Línea A (Roma) o estación de Siena (Toscana); <em>Experiencia</em> = servicios/espacio (hotel = recepción y limpieza; casa = cocina y cuartos separados, ideal con bebé) + valor. Distancia recta (haversine). Nota: en Roma el óptimo cae en el centro storico, así que el este de Prati puntúa más alto en cercanía; el lado del Vaticano queda algo fuera del radio pero a pasos de San Pedro. Verifica 3 habitaciones reales, A/C y planta baja antes de reservar.</p>
   </div>
 </section>
 
@@ -573,46 +536,43 @@ const dayData=[
 const places={
  roma:{center:[41.9068,12.4555],zoom:14,
   sights:[
-   {n:"Coliseo",c:C.coliseo,m:"Día 3 · Roma antigua",t:"Reserva por hora"},
-   {n:"Foro Romano y Palatino",c:C.foro,m:"Día 3",t:""},
-   {n:"Museos Vaticanos · Sixtina",c:C.vat,m:"Día 4 · Vaticano",t:"Primera hora · hay ascensores"},
-   {n:"Basílica de San Pedro",c:C.sanpedro,m:"Día 4",t:""},
-   {n:"Castel Sant'Angelo",c:C.castel,m:"Día 4 · tarde",t:"Parque infantil al lado"},
-   {n:"Panteón",c:C.panteon,m:"Día 5",t:""},
-   {n:"Piazza Navona",c:C.navona,m:"Día 5",t:""},
-   {n:"Fontana di Trevi",c:C.trevi,m:"Día 5",t:""},
-   {n:"Plaza de España",c:C.espana,m:"Día 5",t:""}],
+   {n:"Coliseo",c:C.coliseo,m:"Día 3 · Roma antigua",t:"Reserva por hora",img:IMG.colosseum},
+   {n:"Foro Romano y Palatino",c:C.foro,m:"Día 3",t:"",img:IMG.forum},
+   {n:"Museos Vaticanos · Sixtina",c:C.vat,m:"Día 4 · Vaticano",t:"Primera hora · hay ascensores",img:IMG.sistine},
+   {n:"Basílica de San Pedro",c:C.sanpedro,m:"Día 4",t:"",img:IMG.stPeters},
+   {n:"Castel Sant'Angelo",c:C.castel,m:"Día 4 · tarde",t:"Parque infantil al lado",img:IMG.castel},
+   {n:"Panteón",c:C.panteon,m:"Día 5",t:"",img:IMG.pantheon},
+   {n:"Piazza Navona",c:C.navona,m:"Día 5",t:"",img:IMG.navona},
+   {n:"Fontana di Trevi",c:C.trevi,m:"Día 5",t:"",img:IMG.trevi},
+   {n:"Plaza de España",c:C.espana,m:"Día 5",t:"",img:IMG.spanish}],
   transport:[
    {n:"Metro Ottaviano",c:[41.9078,12.4565],g:"Ⓜ",m:"Línea A",t:"Junto a Prati y el Vaticano"},
    {n:"Metro Lepanto",c:[41.9180,12.4660],g:"Ⓜ",m:"Línea A",t:"Borde norte de Prati"},
-   {n:"Roma Termini",c:[41.9009,12.5021],g:"▦",m:"Estación central",t:"Leonardo Express a FCO"},
-   {n:"Aeropuerto FCO",c:C.fco,g:"✈",m:"Llegada / salida",t:"~45 min a Prati"}],
-  zones:[
-   {n:"Plan A · Prati–Vaticano",c:[41.9068,12.4585],r:540,rec:true,m:"Plan A · junto al Vaticano",t:"Pegado a San Pedro y Castel, a pasos del metro Ottaviano. Aquí: Guest Art, St. Peter mirror, Elegant 3BR y el hotel Trianon Borgo Pio."},
-   {n:"Plan B · Prati–Lepanto",c:[41.9101,12.4720],r:520,rec:false,m:"Plan B · norte/Lepanto",t:"Prati alto, residencial y tranquilo, junto al metro Lepanto. Aquí: Prati 3BDR y Casa Ripetta."}],
-  lodging:[]},
+   {n:"Roma Termini",c:[41.9009,12.5021],g:"▦",m:"Estación central · Leonardo Express",t:"A FCO ~32 min · trenes a toda Italia"},
+   {n:"Aeropuerto FCO",c:C.fco,g:"✈",m:"Fiumicino · llegada/salida (SJU→FCO)",t:"Leonardo Express a Termini ~32 min · taxi fijo ~€50"}],
+  zones:[], lodging:[]},
  toscana:{center:[43.40,11.45],zoom:9,
   sights:[
-   {n:"Siena",c:C.siena,m:"Día 10",t:"~30 min desde la base"},
-   {n:"Florencia",c:C.duomoFI,m:"Día 7",t:"Mejor en tren (~1h30)"},
-   {n:"Pisa",c:C.pisa,m:"Día 9",t:"~1h30 · Torre"},
-   {n:"Lucca",c:C.lucca,m:"Día 9",t:"Murallas · menos gente"},
-   {n:"San Gimignano",c:C.sanGim,m:"Día 10",t:"~30–45 min"},
-   {n:"Monteriggioni",c:[43.3917,11.2233],m:"Chianti",t:"Dentro de la zona base"},
+   {n:"Siena",c:C.siena,m:"Día 10",t:"~30 min desde la base",img:IMG.campo},
+   {n:"Florencia",c:C.duomoFI,m:"Día 7",t:"Mejor en tren (~1h30)",img:IMG.florence},
+   {n:"Pisa",c:C.pisa,m:"Día 9",t:"~1h30 · Torre",img:IMG.pisa},
+   {n:"Lucca",c:C.lucca,m:"Día 9",t:"Murallas · menos gente",img:IMG.lucca},
+   {n:"San Gimignano",c:C.sanGim,m:"Día 10",t:"~30–45 min",img:IMG.sanGim},
+   {n:"Monteriggioni",c:[43.3917,11.2233],m:"Chianti",t:"Dentro de la zona base",img:IMG.monteriggioni},
    {n:"Castellina in Chianti",c:[43.4708,11.2847],m:"Chianti",t:"Viñedos"},
    {n:"Asciano",c:[43.2336,11.5614],m:"Crete Senesi",t:"Muy tranquilo"},
    {n:"Buonconvento",c:[43.1378,11.4817],m:"Crete Senesi",t:""},
-   {n:"Pienza",c:C.pienza,m:"Día 8",t:"~1h · pecorino"},
-   {n:"Montepulciano",c:C.montepulciano,m:"Día 8",t:"Vino · trenecito turístico"},
-   {n:"Montalcino",c:C.montalcino,m:"Día 8",t:"Brunello"},
-   {n:"Bagno Vignoni",c:C.bagno,m:"Día 8",t:"Termas · ideal seniors"}],
+   {n:"Pienza",c:C.pienza,m:"Día 8",t:"~1h · pecorino",img:IMG.pienza},
+   {n:"Montepulciano",c:C.montepulciano,m:"Día 8",t:"Vino · trenecito turístico",img:IMG.montepulciano},
+   {n:"Montalcino",c:C.montalcino,m:"Día 8",t:"Brunello",img:IMG.montalcino},
+   {n:"Bagno Vignoni",c:C.bagno,m:"Día 8",t:"Termas · ideal seniors",img:IMG.bagno}],
   transport:[
-   {n:"Estación de Siena",c:C.sienaSt,g:"▦",m:"Tren regional",t:"A Florencia ~1h30 · evita ZTL"},
-   {n:"Firenze S.M.N.",c:C.firenzeSMN,g:"▦",m:"Estación de Florencia",t:"Llegada al centro"},
-   {n:"Chiusi–Chianciano",c:[43.0758,11.9513],g:"▦",m:"Línea Roma–Florencia",t:"Útil para el sur"}],
-  zones:[
-   {n:"Plan A · Val d'Elsa",c:[43.46,11.19],r:11000,rec:true,m:"Plan A · corredor Florencia–Siena",t:"Colle di Val d'Elsa, Poggibonsi y alrededores, sobre la superstrada SI-FI. Óptimo para Florencia, San Gimignano y Pisa. Aquí: Podere il Pino, Lilla, Palazzo Renieri, Chianti Village."},
-   {n:"Plan B · Cerca de Siena",c:[43.35,11.16],r:11000,rec:false,m:"Plan B · más cerca de Siena",t:"Casole d'Elsa y el anillo de Siena: más cerca de Siena y la Val d'Orcia. Aquí: Agriturismo Nerbona, Borgo al Cerro y el hotel Villa Scacciapensieri."}],
+   {n:"Estación de Siena",c:C.sienaSt,g:"▦",m:"Tren/bus regional",t:"Bus rápido a Florencia ~1h15 · evita la ZTL"},
+   {n:"Firenze S.M.N.",c:C.firenzeSMN,g:"▦",m:"Estación central de Florencia",t:"Aparca fuera de la ZTL y entra en tren"},
+   {n:"Pisa Centrale",c:[43.7085,10.3990],g:"▦",m:"Tren a la Torre y la costa",t:"~5 min en LAM Rossa hasta la Torre"},
+   {n:"Lucca",c:[43.8430,10.5050],g:"▦",m:"Estación de Lucca",t:"A pasos de las murallas"},
+   {n:"Chiusi–Chianciano",c:[43.0758,11.9513],g:"▦",m:"Línea Roma–Florencia",t:"Útil para la Val d'Orcia / sur"}],
+  zones:[],
   lodging:[],
   routes:[{to:C.duomoFI,label:"~1h"},{to:C.pisa,label:"~1h30"},{to:C.sanGim,label:"30–45m"},{to:C.siena,label:"~30m"},{to:C.pienza,label:"~1h15"}],
   routeAnchor:[43.44,11.19]}
@@ -649,8 +609,8 @@ const toursTos=[
 ];
 
 const checklist=[
- "Roma: elegir hospedaje dentro del radio óptimo (Prati este/centro) y reservar en Expedia",
- "Toscana: elegir hospedaje dentro del radio óptimo (Val d'Elsa, ponderando Florencia) y reservar en Expedia",
+ "Reservar hospedaje en Roma (Prati: tranquilo, cerca del Vaticano y metro) en tu site preferido",
+ "Reservar hospedaje en Toscana (Val d'Elsa / cerca de Siena, con parqueo) en tu site preferido",
  "Reservar van 8–9 plazas automática + anotar 2 conductores",
  "Comprar entradas: Vaticano, Coliseo y Uffizi/Academia",
  "Fijar fechas exactas y comprar vuelos SJU–FCO",
@@ -667,7 +627,7 @@ const pnotes=[
  {h:"Reservas clave",d:"Vaticano, Coliseo y Uffizi/Academia se agotan: compra con semanas de antelación."}
 ];
 
-const sections=[["mapa","Mapa","◉"],["itinerario","Itinerario","☷"],["costos","Costos","$"],["hospedaje","Hospedaje","⌂"],["tours","Tours","✦"],["documentar","Documentar","✎"],["practicas","Notas prácticas","ⓘ"]];
+const sections=[["mapa","Mapa","◉"],["itinerario","Itinerario","☷"],["costos","Costos","$"],["tours","Tours","✦"],["documentar","Documentar","✎"],["practicas","Notas prácticas","ⓘ"]];
 
 /* ---------------- render ---------------- */
 document.getElementById('updated').textContent="ACT. "+new Date().toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();
@@ -791,93 +751,6 @@ document.querySelectorAll('.cost-toggle button').forEach(b=>b.addEventListener('
 }));
 renderCosts();
 
-/* ---------------- Hospedaje decision matrix ---------------- */
-const lodgeData={
- roma:[
-  {n:"Guest Art - Rome",lbl:"Guest Art",type:"casa",plan:"A",area:"Prati–Vaticano",price:2291,rating:9.8,reviews:41,c:[41.907947,12.456166],amen:2.5,url:"https://www.expedia.com/.h46375701.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"St. Peter mirror Romantic view",lbl:"St. Peter mirror",type:"casa",plan:"A",area:"Prati–Vaticano",price:2761,rating:9.8,reviews:81,c:[41.911537,12.454839],amen:2.5,url:"https://www.expedia.com/.h48855405.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Elegant 3BR near S. Peter",lbl:"Elegant 3BR",type:"casa",plan:"A",area:"Prati–Vaticano",price:2158,rating:9.4,reviews:21,c:[41.903421,12.465711],amen:2.5,url:"https://www.expedia.com/.h92782478.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Trianon Borgo Pio (hotel 4★)",lbl:"Trianon (hotel)",type:"hotel",plan:"A",area:"Prati–Vaticano",price:3702,rating:9.4,reviews:1512,c:[41.904095,12.461617],amen:3.5,url:"https://www.expedia.com/.h1443366.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Prati 3BDR Urban Charm",lbl:"Prati 3BDR",type:"casa",plan:"B",area:"Prati–Lepanto",price:2021,rating:9.4,reviews:18,c:[41.911344,12.469802],amen:2.5,url:"https://www.expedia.com/.h100171671.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Casa Ripetta",lbl:"Casa Ripetta",type:"casa",plan:"B",area:"Prati–Lepanto",price:1919,rating:9.2,reviews:7,c:[41.909253,12.474665],amen:2.0,url:"https://www.expedia.com/.h28946343.Hotel-Information?chkin=2026-09-21&chkout=2026-09-25&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"}
- ],
- toscana:[
-  {n:"Podere il Pino",lbl:"Podere il Pino",type:"casa",plan:"A",area:"Val d'Elsa",price:977,rating:9.2,reviews:18,c:[43.447146,11.117456],amen:2.5,url:"https://www.expedia.com/.h4724071.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Lilla · 6 huéspedes",lbl:"Lilla",type:"casa",plan:"A",area:"Val d'Elsa",price:1036,rating:9.0,reviews:2,c:[43.431735,11.147974],amen:2.0,url:"https://www.expedia.com/.h22586946.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Hotel Palazzo Renieri 3★S",lbl:"Palazzo Renieri (hotel)",type:"hotel",plan:"A",area:"Val d'Elsa",price:1755,rating:8.6,reviews:87,c:[43.42131,11.11694],amen:3.0,url:"https://www.expedia.com/.h20078846.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Chianti Village Morrocco",lbl:"Chianti Village",type:"casa",plan:"A",area:"Val d'Elsa",price:1649,rating:8.6,reviews:115,c:[43.561443,11.205655],amen:2.5,url:"https://www.expedia.com/.h5273860.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Agriturismo Nerbona",lbl:"Agriturismo Nerbona",type:"hotel",plan:"B",area:"Cerca de Siena",price:1254,rating:9.6,reviews:22,c:[43.375165,11.06411],amen:3.0,url:"https://www.expedia.com/.h11047087.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Borgo al Cerro",lbl:"Borgo al Cerro",type:"hotel",plan:"B",area:"Cerca de Siena",price:1540,rating:9.2,reviews:24,c:[43.348405,11.046968],amen:3.0,url:"https://www.expedia.com/.h2524526.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"},
-  {n:"Villa Scacciapensieri (hotel 4★)",lbl:"Villa Scacciapensieri (hotel)",type:"hotel",plan:"B",area:"Cerca de Siena",price:4776,rating:9.2,reviews:443,c:[43.3364,11.335431],amen:3.5,url:"https://www.expedia.com/.h2693499.Hotel-Information?chkin=2026-09-25&chkout=2026-09-30&rm1=a5:c2&SEOCID=U.HOTEL.CLAUDEAI-MICROAPP"}
- ]
-};
-const hbAnchor={
- roma:{c:[41.9011,12.4789],r:1.36,trans:[[41.9078,12.4565],[41.9180,12.4660]]},
- toscana:{c:[43.5322,11.1098],r:12.34,trans:[[43.3257,11.3215]]}
-};
-function hbHav(a,b){const R=6371,r=Math.PI/180;const dLa=(b[0]-a[0])*r,dLo=(b[1]-a[1])*r;const h=Math.sin(dLa/2)**2+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
-function hbMM(arr,benefit){const lo=Math.min(...arr),hi=Math.max(...arr);return arr.map(v=>hi===lo?100:(benefit?(v-lo)/(hi-lo)*100:(hi-v)/(hi-lo)*100));}
-const hbDefault={loc:25,trans:20,rating:20,rev:15,exp:20};
-let hbWeights={...hbDefault}, hbBase='roma';
-function hbRank(base){
- const rows=lodgeData[base], A=hbAnchor[base];
- const loc=rows.map(r=>hbHav(r.c,A.c));
- const tr=rows.map(r=>Math.min(...A.trans.map(t=>hbHav(r.c,t))));
- const locN=hbMM(loc,false), trN=hbMM(tr,false);
- const ratingN=hbMM(rows.map(r=>r.rating),true), revN=hbMM(rows.map(r=>Math.log10(r.reviews||1)),true);
- const amenN=hbMM(rows.map(r=>r.amen),true), valueN=hbMM(rows.map(r=>r.price),false);
- const expN=hbMM(amenN.map((a,i)=>0.6*a+0.4*valueN[i]),true);
- const tot=hbWeights.loc+hbWeights.trans+hbWeights.rating+hbWeights.rev+hbWeights.exp||1;
- return rows.map((r,i)=>({...r,dist:loc[i],inside:loc[i]<=A.r,score:(hbWeights.loc*locN[i]+hbWeights.trans*trN[i]+hbWeights.rating*ratingN[i]+hbWeights.rev*revN[i]+hbWeights.exp*expN[i])/tot}))
-  .sort((a,b)=>b.score-a.score);
-}
-const hbTableEl=document.getElementById('hb-table');
-function planChecked(plan){const el=document.getElementById(plan==='A'?'ly-plana':'ly-planb');return el?el.checked:true;}
-function typeCheckedM(t){const el=document.getElementById(t==='hotel'?'ly-hotel':'ly-casa');return el?el.checked:true;}
-function hbRender(){
- const shown=hbRank(hbBase).filter(r=>typeCheckedM(r.type));
- if(!shown.length){hbTableEl.innerHTML='<div class="hb-empty">Selecciona Hotel o Casa para ver candidatos.</div>';return;}
- const max=Math.max(...shown.map(r=>r.score))||1;
- hbTableEl.innerHTML=shown.map((r,i)=>{
-  const pp=Math.round(r.price/6);
-  return `<div class="hb-row ${i===0?'top':''}"><span class="hb-rank">${i+1}</span>
-   <div class="hb-main"><a class="hb-name" href="${r.url}" target="_blank" rel="noopener">${r.n} ▸</a>
-   <div class="hb-meta"><span class="ptag ${r.type}">${r.type==='hotel'?'★ Hotel':'⌂ Casa'}</span> <span class="dtag ${r.inside?'in':'out'}">${r.inside?'●':'○'} ${r.dist.toFixed(1)} km del óptimo</span> ★${r.rating} (${r.reviews}) · $${pp}/pers</div>
-   <a class="hb-link" href="${r.url}" target="_blank" rel="noopener">Ver en Expedia ▸</a></div>
-   <div class="hb-score"><div class="hb-bar-track"><div class="hb-bar-fill" style="width:${(r.score/max*100).toFixed(0)}%"></div></div><b>${r.score.toFixed(0)}</b></div></div>`;
- }).join('');
-}
-function hbUpdateLabels(){
- const tot=hbWeights.loc+hbWeights.trans+hbWeights.rating+hbWeights.rev+hbWeights.exp||1;
- document.querySelectorAll('#hb-weights label').forEach(l=>{
-  const k=l.dataset.k; l.querySelector('output').textContent=Math.round(hbWeights[k]/tot*100)+'%';
- });
-}
-document.querySelectorAll('#hb-weights label').forEach(l=>{
- const k=l.dataset.k, inp=l.querySelector('input');
- inp.value=hbDefault[k];
- inp.addEventListener('input',()=>{hbWeights[k]=+inp.value; hbUpdateLabels(); hbRender(); store.set('italia_hbw',JSON.stringify(hbWeights));});
-});
-document.querySelectorAll('[data-hb]').forEach(b=>b.addEventListener('click',()=>{
- document.querySelectorAll('[data-hb]').forEach(x=>x.classList.remove('active'));
- b.classList.add('active'); hbBase=b.dataset.hb; hbRender();
-}));
-/* Hotel/Casa filter linked between matrix and map */
-[['hb-hotel','ly-hotel'],['hb-casa','ly-casa']].forEach(([h,m])=>{
- const he=document.getElementById(h);
- if(he) he.addEventListener('change',()=>{const me=document.getElementById(m);if(me){me.checked=he.checked;me.dispatchEvent(new Event('change'));}else{hbRender();}});
-});
-[['ly-hotel','hb-hotel'],['ly-casa','hb-casa']].forEach(([m,h])=>{
- const me=document.getElementById(m);
- if(me) me.addEventListener('change',()=>{const he=document.getElementById(h);if(he)he.checked=me.checked;hbRender();});
-});
-document.getElementById('hb-reset').addEventListener('click',()=>{
- hbWeights={...hbDefault};
- document.querySelectorAll('#hb-weights label').forEach(l=>{l.querySelector('input').value=hbDefault[l.dataset.k];});
- hbUpdateLabels(); hbRender(); store.set('italia_hbw',JSON.stringify(hbWeights));
-});
-hbUpdateLabels(); hbRender();
-
 /* ---------------- main map ---------------- */
 let map=null;
 try{
@@ -885,63 +758,40 @@ try{
  carto(map);
  map.on('click',()=>map.scrollWheelZoom.enable());
  map.on('mouseout',()=>map.scrollWheelZoom.disable());
- const layers={sights:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map),optimal:L.layerGroup().addTo(map),lodging:L.layerGroup().addTo(map)};
- let lodgeMarkers=[];
+ const layers={sights:L.layerGroup().addTo(map),transport:L.layerGroup().addTo(map),routes:L.layerGroup().addTo(map)};
 
  const sightIcon=()=>L.divIcon({className:'',html:'<div class="mk-sight"></div>',iconSize:[14,14],iconAnchor:[7,7]});
  const transportIcon=(g,c)=>L.divIcon({className:'',html:`<div class="mk-transport" style="--mkc:${c}">${g}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
- const zoneLabel=(txt,c)=>L.divIcon({className:'',html:`<div class="zone-label" style="--mkc:${c}">${txt}</div>`,iconSize:[1,1],iconAnchor:[0,0]});
  const popup=p=>`<span class="pop-t">${p.n}</span>`+(p.m?`<span class="pop-meta">${p.m}</span>`:'')+(p.t?`<span>${p.t}</span>`:'')+`<a class="pop-open" href="${gmapsQuery(p.c)}" target="_blank" rel="noopener">Abrir en Maps ▸</a>`;
+ const photoTip=p=>p.img?`<div class="photo-card"><img src="${p.img}" loading="lazy" alt=""><div class="pc-cap">${p.n}</div></div>`:p.n;
+ const sightPopup=p=>`<span class="pop-t">${p.n}</span>`+(p.img?`<img class="pop-img" src="${p.img}" loading="lazy" alt="">`:'')+(p.m?`<span class="pop-meta">${p.m}</span>`:'')+(p.t?`<span>${p.t}</span>`:'')+`<a class="pop-open" href="${gmapsQuery(p.c)}" target="_blank" rel="noopener">Abrir en Maps ▸</a>`;
 
  function drawBase(key){
   Object.values(layers).forEach(l=>l.clearLayers());
-  lodgeMarkers=[];
   const both=key==='general';
   const sets=both?['roma','toscana']:[key];
   sets.forEach(sk=>{
    const data=places[sk], accent=sk==='roma'?ROMA:TOSCANA;
-   data.sights.forEach(p=>L.marker(p.c,{icon:sightIcon()}).bindPopup(popup(p),{closeButton:false}).addTo(layers.sights).bindTooltip(p.n,{direction:'top',offset:[0,-8]}));
-   data.transport.forEach(p=>L.marker(p.c,{icon:transportIcon(p.g,accent)}).bindPopup(popup(p),{closeButton:false}).addTo(layers.transport));
-   const an=hbAnchor[sk];
-   L.circle(an.c,{radius:an.r*1000,color:accent,weight:1.6,opacity:.9,dashArray:'6,6',fillColor:accent,fillOpacity:.07,interactive:false}).addTo(layers.optimal);
-   L.marker(an.c,{icon:L.divIcon({className:'',html:`<div class="mk-anchor" style="color:${accent};border-color:${accent}">✛</div>`,iconSize:[26,26],iconAnchor:[13,13]})}).bindPopup(`<span class="pop-t">Punto óptimo · ${sk==='roma'?'Roma':'Toscana'}</span><span class="pop-meta">Centro de gravedad ponderado de los lugares a visitar (mediana geométrica). El círculo (~${an.r.toFixed(1)} km) acota la mitad más céntrica de los candidatos.</span>`,{closeButton:false}).addTo(layers.optimal).bindTooltip('Óptimo',{permanent:!both,direction:'top',offset:[0,-12],className:'lodge-tt anchor-tt'});
+   data.sights.forEach(p=>L.marker(p.c,{icon:sightIcon()}).bindPopup(sightPopup(p),{closeButton:false,maxWidth:260}).addTo(layers.sights).bindTooltip(photoTip(p),{direction:'top',offset:[0,-10],className:p.img?'photo-tt':''}));
+   data.transport.forEach(p=>L.marker(p.c,{icon:transportIcon(p.g,accent)}).bindPopup(popup(p),{closeButton:false}).addTo(layers.transport).bindTooltip(p.n,{direction:'top',offset:[0,-8]}));
    if(!both){(data.routes||[]).forEach(r=>{
     const a=data.routeAnchor;
     L.polyline([a,r.to],{color:accent,weight:1.5,opacity:.5,dashArray:'4,7'}).addTo(layers.routes);
     const mid=[(a[0]+r.to[0])/2,(a[1]+r.to[1])/2];
     L.marker(mid,{icon:L.divIcon({className:'',html:`<span class="rt-label">${r.label}</span>`,iconSize:[1,1]}),interactive:false}).addTo(layers.routes);
    });}
-   (lodgeData[sk]||[]).forEach(h=>{
-    const pp=Math.round(h.price/6);
-    const dist=hbHav(h.c,an.c), inside=dist<=an.r;
-    const bg=inside?accent:'#fff', fg=inside?'#fff':'var(--neutral)', bd=inside?accent:'#B7BEC9';
-    const glyph=h.type==='hotel'?'★':'⌂';
-    const ic=L.divIcon({className:'',html:`<div class="mk-lodge" style="background:${bg};color:${fg};border-color:${bd}">${glyph}</div>`,iconSize:[22,22],iconAnchor:[11,11]});
-    const pop=`<span class="pop-t">${h.n}</span><span class="pop-meta">${h.type==='hotel'?'Hotel':'Casa'} · ${dist.toFixed(1)} km del óptimo ${inside?'(dentro del radio)':'(fuera)'} · ★${h.rating} (${h.reviews}) · $${pp}/pers</span><a class="pop-open" href="${h.url}" target="_blank" rel="noopener">Ver en Expedia ▸</a>`;
-    const mk=L.marker(h.c,{icon:ic}).bindPopup(pop,{closeButton:false});
-    if(!both) mk.bindTooltip(h.lbl||h.n,{permanent:true,direction:'right',offset:[9,0],className:'lodge-tt '+(inside?'lodge-in':'lodge-out')});
-    else mk.bindTooltip(h.n,{direction:'top',offset:[0,-8]});
-    lodgeMarkers.push({mk,type:h.type});
-   });
   });
   if(both) map.flyToBounds([[41.6,10.2],[44.0,12.6]],{padding:[30,30],duration:reduce?0:.8});
   else map.flyTo(places[key].center,places[key].zoom,{duration:reduce?0:.8});
   applyLayerToggles();
  }
- function typeChecked(t){const el=document.getElementById(t==='hotel'?'ly-hotel':'ly-casa');return el?el.checked:true;}
- function refreshLodging(){
-  layers.lodging.clearLayers();
-  lodgeMarkers.forEach(o=>{if(typeChecked(o.type))o.mk.addTo(layers.lodging);});
- }
  function applyLayerToggles(){
-  [['ly-sights','sights'],['ly-transport','transport'],['ly-routes','routes'],['ly-optimal','optimal']].forEach(([id,k])=>{
+  [['ly-sights','sights'],['ly-transport','transport'],['ly-routes','routes']].forEach(([id,k])=>{
    const el=document.getElementById(id); if(!el) return; const on=el.checked;
    if(on){if(!map.hasLayer(layers[k]))map.addLayer(layers[k]);}else{if(map.hasLayer(layers[k]))map.removeLayer(layers[k]);}
   });
-  refreshLodging();
  }
- window.__applyMapFilters=applyLayerToggles;
- ['ly-sights','ly-transport','ly-routes','ly-optimal','ly-hotel','ly-casa'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',applyLayerToggles);});
+ ['ly-sights','ly-transport','ly-routes'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',applyLayerToggles);});
  document.querySelectorAll('.base-switch button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.base-switch button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
@@ -961,7 +811,6 @@ try{
 
 /* persistence */
 const store={get(k){try{return localStorage.getItem(k);}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
-(function(){const sw=store.get('italia_hbw');if(sw){try{const w=JSON.parse(sw);Object.assign(hbWeights,w);document.querySelectorAll('#hb-weights label').forEach(l=>{const inp=l.querySelector('input');if(hbWeights[l.dataset.k]!=null)inp.value=hbWeights[l.dataset.k];});hbUpdateLabels();hbRender();}catch(e){}}})();
 const clEl=document.getElementById('checklist');
 const savedChecks=(()=>{try{return JSON.parse(store.get('italia_checks')||'{}');}catch(e){return {};}})();
 checklist.forEach((c,i)=>{
