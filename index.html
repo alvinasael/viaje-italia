@@ -98,7 +98,8 @@
   .itin{margin-top:24px;display:flex;flex-direction:column;gap:10px}
   .day{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--base,var(--neutral));border-radius:11px;overflow:hidden;box-shadow:var(--shadow)}
   .day-head{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:transparent;border:0;cursor:pointer;padding:14px 16px;font-family:inherit}
-  .day-head .n{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:12px;color:var(--base);min-width:42px;letter-spacing:.02em}
+  .day-head .n{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:12px;color:var(--base);min-width:52px;letter-spacing:.02em}
+  .day-head .n .dt{display:block;font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:9px;color:var(--ink-soft);letter-spacing:.03em;text-transform:uppercase;margin-top:3px}
   .day-head .ttl{flex:1;min-width:0}
   .day-head .ttl .t{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:16px}
   .day-head .ttl .s{font-size:12.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -268,8 +269,8 @@
       <div class="fact"><div class="k">Grupo</div><div class="v">6 personas</div></div>
       <div class="fact"><div class="k">Duración</div><div class="v">~11 días · 9 noches</div></div>
       <div class="fact"><div class="k">Ruta</div><div class="v">SJU → FCO</div></div>
-      <div class="fact"><div class="k">Temporada</div><div class="v">Fin sep – med oct</div></div>
-      <div class="fact"><div class="k">Esquema</div><div class="v">2 bases · van en Toscana</div></div>
+      <div class="fact"><div class="k">Fechas</div><div class="v">25 sep – 5 oct 2026</div></div>
+      <div class="fact"><div class="k">Esquema</div><div class="v">2 bases · tren + tours</div></div>
     </div>
   </div>
 </header>
@@ -331,7 +332,7 @@
       <tbody id="ctbody"></tbody>
       <tfoot><tr><td>Total estimado</td><td class="num" id="cf-lo"></td><td class="num" id="cf-hi"></td><td class="wcol"></td></tr></tfoot>
     </table>
-    <p class="cnote">Rangos del documento base. La bebé paga mucho menos en vuelos, así que el total real del grupo queda por debajo del ×6 lineal. <strong>Palancas para abaratar:</strong> viajar en noviembre, cocinar cenas en el agriturismo, y reservar vuelos, van y entradas con anticipación.</p>
+    <p class="cnote">Rangos del documento base. La bebé paga mucho menos en vuelos, así que el total real del grupo queda por debajo del ×6 lineal. <strong>Palancas para abaratar:</strong> viajar en noviembre, cocinar cenas en el agriturismo, y reservar vuelos, trenes y tours con anticipación.</p>
   </div>
 </section>
 
@@ -364,7 +365,7 @@
       <div class="panel">
         <h3>Bitácora del viaje</h3>
         <div class="hint">notas libres · se guarda local</div>
-        <textarea id="notes" placeholder="Ej.: cotización de van automática 9 plazas, candidatos de apartamento en Prati, fechas exactas, links de agriturismos…"></textarea>
+        <textarea id="notes" placeholder="Ej.: reservas de tren, tour de Val d'Orcia, candidatos de alojamiento cerca de estación, fechas exactas…"></textarea>
         <div class="saved" id="saved-msg"></div>
       </div>
     </div>
@@ -463,12 +464,12 @@ const dayNav={
  3:{mode:'walking',coords:[C.coliseo,C.foro]},
  4:{mode:'walking',coords:[C.vat,C.sanpedro,C.castel]},
  5:{mode:'walking',coords:[C.panteon,C.navona,C.trevi,C.espana]},
- 6:{mode:'driving',coords:[C.romeDep,C.base]},
+ 6:{mode:'transit',coords:[C.romeDep,C.base]},
  7:{mode:'walking',coords:[C.duomoFI,C.ponteV,C.uffizi,C.academia]},
  8:{mode:'driving',coords:[C.base,C.pienza,C.montepulciano,C.bagno,C.montalcino]},
- 9:{mode:'driving',coords:[C.base,C.pisa,C.lucca]},
- 10:{mode:'driving',coords:[C.siena,C.sanGim]},
- 11:{mode:'driving',coords:[C.base,C.fco]}
+ 9:{mode:'transit',coords:[C.base,C.pisa,C.lucca]},
+ 10:{mode:'transit',coords:[C.siena,C.sanGim]},
+ 11:{mode:'transit',coords:[C.base,C.fco]}
 };
 const stayByDay={
  1:{kind:'flight',where:'Noche en el avión'},
@@ -476,60 +477,60 @@ const stayByDay={
  3:{kind:'roma',where:'Prati · noche 2 de 4'},
  4:{kind:'roma',where:'Prati · noche 3 de 4'},
  5:{kind:'roma',where:'Prati · noche 4 de 4'},
- 6:{kind:'toscana',where:'Agriturismo · noche 1 de 5',out:'Prati',in:'Agriturismo',vanPick:'Termini / FCO',vanPickT:'~11:00'},
- 7:{kind:'toscana',where:'Agriturismo · noche 2 de 5'},
- 8:{kind:'toscana',where:'Agriturismo · noche 3 de 5'},
- 9:{kind:'toscana',where:'Agriturismo · noche 4 de 5'},
- 10:{kind:'toscana',where:'Agriturismo · noche 5 de 5'},
- 11:{kind:'flight',where:'Vuelo de regreso · sin noche',out:'Agriturismo',vanDrop:'FCO',vanDropT:'~13:00'}
+ 6:{kind:'toscana',where:'Base Toscana · noche 1 de 5',out:'Prati',in:'Base Toscana'},
+ 7:{kind:'toscana',where:'Base Toscana · noche 2 de 5'},
+ 8:{kind:'toscana',where:'Base Toscana · noche 3 de 5'},
+ 9:{kind:'toscana',where:'Base Toscana · noche 4 de 5'},
+ 10:{kind:'toscana',where:'Base Toscana · noche 5 de 5'},
+ 11:{kind:'flight',where:'Vuelo de regreso · sin noche',out:'Base Toscana'}
 };
 
 /* ---- itinerary data ---- */
 const dayData=[
- {n:1,base:"r",t:"Vuelo SJU → Roma",s:"Vuelo nocturno · escala en EE.UU.",
+ {n:1,base:"r",date:"vie 25 sep",t:"Vuelo SJU → Roma",s:"Vuelo nocturno · escala en EE.UU.",
   desc:"Vuelo nocturno (no hay directos; escala en EE.UU.). Se duerme en el avión.",
   imgs:[[IMG.castel,"Roma te espera"]],
   map:{line:[C.sju,C.fco],rlabel:"Vuelo nocturno"}},
- {n:2,base:"r",t:"Llegada a Roma · Prati",s:"Transfer al apartamento · tarde tranquila",
-  desc:"Transfer directo al apartamento en Prati (no recojas la van todavía). Tarde tranquila: Via Cola di Rienzo, gelato, cena temprano.",
+ {n:2,base:"r",date:"sáb 26 sep",t:"Llegada a Roma · Prati",s:"Transfer al alojamiento · tarde tranquila",
+  desc:"Transfer directo al alojamiento en Prati. Tarde tranquila: Via Cola di Rienzo, gelato, cena temprano.",
   imgs:[[IMG.castel,"Castel Sant'Angelo"],[IMG.stPeters,"San Pedro, al lado"]],
-  map:{points:[[C.prati,"Apartamento · Prati"],[C.colarienzo,"Via Cola di Rienzo"],[C.castel,"Castel Sant'Angelo"]]}},
- {n:3,base:"r",t:"Roma antigua",s:"Coliseo · Foro · Palatino",
+  map:{points:[[C.prati,"Alojamiento · Prati"],[C.colarienzo,"Via Cola di Rienzo"],[C.castel,"Castel Sant'Angelo"]]}},
+ {n:3,base:"r",date:"dom 27 sep",t:"Roma antigua",s:"Coliseo · Foro · Palatino",
   desc:"Coliseo, Foro y Palatino por la mañana con reserva de hora. Almuerzo en Monti. Tarde libre / siesta.",
   imgs:[[IMG.colosseum,"Coliseo"],[IMG.forum,"Foro Romano"]],
   map:{points:[[C.coliseo,"Coliseo"],[C.foro,"Foro y Palatino"]]}},
- {n:4,base:"r",t:"Vaticano",s:"Museos · Sixtina · San Pedro",
+ {n:4,base:"r",date:"lun 28 sep",t:"Vaticano",s:"Museos · Sixtina · San Pedro",
   desc:"Museos + Capilla Sixtina + San Pedro (primera hora). Tarde: Castel Sant'Angelo y parque infantil para la nena.",
   imgs:[[IMG.stPeters,"Basílica de San Pedro"],[IMG.vatMuseums,"Museos Vaticanos"],[IMG.sistine,"Capilla Sixtina"]],
   map:{points:[[C.vat,"Museos Vaticanos"],[C.sanpedro,"San Pedro"],[C.castel,"Castel Sant'Angelo"]]}},
- {n:5,base:"r",t:"Centro histórico a pie",s:"Panteón · Navona · Trevi · España",
+ {n:5,base:"r",date:"mar 29 sep",t:"Centro histórico a pie",s:"Panteón · Navona · Trevi · España",
   desc:"Panteón, Piazza Navona, Trevi y Plaza de España. Siesta al mediodía. Última cena romana. Empacar.",
   imgs:[[IMG.trevi,"Fontana di Trevi"],[IMG.pantheon,"Panteón"],[IMG.navona,"Piazza Navona"]],
   map:{points:[[C.panteon,"Panteón"],[C.navona,"Piazza Navona"],[C.trevi,"Fontana di Trevi"],[C.espana,"Plaza de España"]]}},
- {n:6,base:"t",t:"Roma → Toscana",s:"~2.5–3h en van · recoger fuera de la ZTL",
-  desc:"Recoge la van fuera de la ZTL (Termini o aeropuerto). ~2.5–3h al campo cerca de Siena, con parada para almorzar. Check-in y tarde tranquila.",
+ {n:6,base:"t",date:"mié 30 sep",t:"Roma → Toscana",s:"En tren · base cerca de estación",
+  desc:"Tren desde Roma (Termini) a la Toscana (~2h a Florencia; enlace a la base). Traslado o taxi al alojamiento, check-in y tarde tranquila.",
   imgs:[[IMG.valdorcia,"Val d'Orcia"],[IMG.monteriggioni,"Zona base · Monteriggioni"]],
-  map:{line:[C.romeDep,C.base],rlabel:"~2.5–3h en van"}},
- {n:7,base:"t",t:"Florencia",s:"En tren desde Siena · Duomo, Uffizi",
-  desc:"Mejor en tren desde Siena (~1h30). Duomo, Ponte Vecchio, Signoria y Uffizi o Academia (David) con reserva.",
+  map:{line:[C.romeDep,C.base],rlabel:"En tren ~2h"}},
+ {n:7,base:"t",date:"jue 1 oct",t:"Florencia",s:"En tren · Duomo, Uffizi",
+  desc:"Florencia en tren (se entra a pie: evita la ZTL). Duomo, Ponte Vecchio, Signoria y Uffizi o Academia (David) con reserva.",
   imgs:[[IMG.florence,"Duomo de Florencia"],[IMG.ponte,"Ponte Vecchio"]],
-  map:{line:[C.sienaSt,C.firenzeSMN],rlabel:"Tren ~1h30",points:[[C.duomoFI,"Duomo"],[C.ponteV,"Ponte Vecchio"],[C.uffizi,"Uffizi"],[C.academia,"Academia · David"]]}},
- {n:8,base:"t",t:"Val d'Orcia",s:"Pienza · Montepulciano · Bagno Vignoni",
-  desc:"Con la van: Pienza, Montepulciano, Bagno Vignoni (termas) y Montalcino. Distancias cortas, paisaje de postal.",
+  map:{line:[C.sienaSt,C.firenzeSMN],rlabel:"En tren",points:[[C.duomoFI,"Duomo"],[C.ponteV,"Ponte Vecchio"],[C.uffizi,"Uffizi"],[C.academia,"Academia · David"]]}},
+ {n:8,base:"t",date:"vie 2 oct",t:"Val d'Orcia",s:"Tour · Pienza · Montepulciano · Bagno Vignoni",
+  desc:"En tour (o transfer privado): Pienza, Montepulciano, Bagno Vignoni (termas) y Montalcino. El tren no llega a estos pueblos, así que un tour es lo práctico y descansado.",
   imgs:[[IMG.pienza,"Pienza"],[IMG.valdorcia,"Val d'Orcia"],[IMG.montepulciano,"Montepulciano"]],
   map:{points:[[C.pienza,"Pienza"],[C.montepulciano,"Montepulciano"],[C.bagno,"Bagno Vignoni"],[C.montalcino,"Montalcino"]],loop:true}},
- {n:9,base:"t",t:"Pisa + Lucca",s:"En van · Torre y murallas",
-  desc:"Pisa por la mañana (2–3h). Luego Lucca: murallas a pie o en bici (hay con sillita). Cena en Lucca.",
+ {n:9,base:"t",date:"sáb 3 oct",t:"Pisa + Lucca",s:"En tren · Torre y murallas",
+  desc:"Pisa por la mañana (2–3h) en tren. Luego Lucca: murallas a pie o en bici (hay con sillita). Cena en Lucca.",
   imgs:[[IMG.pisa,"Torre de Pisa"],[IMG.lucca,"Murallas de Lucca"]],
-  map:{line:[C.base,C.pisa,C.lucca],rlabel:"En van",points:[[C.pisa,"Pisa"],[C.lucca,"Lucca"]]}},
- {n:10,base:"t",t:"Siena + San Gimignano",s:"Piazza del Campo · torres medievales",
-  desc:"Siena por la mañana, San Gimignano por la tarde. O día de descanso en el agriturismo (piscina, viñedos).",
+  map:{line:[C.base,C.pisa,C.lucca],rlabel:"En tren",points:[[C.pisa,"Pisa"],[C.lucca,"Lucca"]]}},
+ {n:10,base:"t",date:"dom 4 oct",t:"Siena + San Gimignano",s:"Piazza del Campo · torres medievales",
+  desc:"Siena en tren o bus; San Gimignano en bus/tour desde Poggibonsi. O día de descanso en la base (piscina, viñedos).",
   imgs:[[IMG.campo,"Piazza del Campo, Siena"],[IMG.sanGim,"San Gimignano"],[IMG.sienaDuomo,"Duomo de Siena"]],
   map:{points:[[C.siena,"Siena"],[C.sanGim,"San Gimignano"]]}},
- {n:11,base:"t",t:"Toscana → Roma → SJU",s:"~3h a FCO · devolver van",
-  desc:"Regreso a FCO (~3h), devolver la van y vuelo. Si el vuelo es temprano, considera dormir cerca de FCO.",
+ {n:11,base:"t",date:"lun 5 oct",t:"Toscana → Roma → SJU",s:"En tren a FCO · vuelo",
+  desc:"Tren de regreso a Roma/FCO (~2–3h) y vuelo a SJU. Si el vuelo es temprano, considera dormir cerca de FCO/Termini la noche antes.",
   imgs:[[IMG.valdorcia,"Adiós a la Toscana"]],
-  map:{line:[C.base,C.fco],rlabel:"~3h a FCO"}}
+  map:{line:[C.base,C.fco],rlabel:"En tren a FCO"}}
 ];
 
 /* ---- main map data ---- */
@@ -581,7 +582,7 @@ const places={
 const costs=[
  {n:"Vuelos SJU–FCO (ida y vuelta)",lo:750,hi:950},
  {n:"Hospedaje (Roma + Toscana ÷6)",lo:450,hi:550},
- {n:"Van + gasolina + peajes + parqueo",lo:200,hi:250},
+ {n:"Trenes + traslados + tours (Toscana)",lo:200,hi:300},
  {n:"Comida",lo:400,hi:550},
  {n:"Entradas y actividades",lo:180,hi:250},
  {n:"Trenes, transfers, varios",lo:120,hi:180}
@@ -602,7 +603,7 @@ const toursTos=[
   links:[["GetYourGuide","https://www.getyourguide.com/siena-l435/from-siena-val-d-orcia-wine-tour-t60232/"],["Context Travel","https://www.contexttravel.com/cities/siena/tours/day-in-the-val-d-orcia-from-siena"]]},
  {t:"Chianti · medio día desde Siena (grupo pequeño)",chip:"media jornada",meta:"Castellina + cata de vino y aceite de oliva.",price:"≈ €85 / persona",
   links:[["Winedering","https://www.winedering.com/chianti-castles-small-group-half-day-wine-tour-from-siena_d4074_travel"],["GetYourGuide","https://www.getyourguide.com/siena-l435/"]]},
- {t:"Val d'Orcia privado · Mercedes / van con recogida",chip:"a medida",meta:"Ruta a tu ritmo desde el agriturismo. Ideal grupo multigeneracional.",price:"Cotización (privado)",
+ {t:"Val d'Orcia privado · Mercedes / van con recogida",chip:"a medida",meta:"Ruta a tu ritmo desde tu base. Ideal grupo multigeneracional.",price:"Cotización (privado)",
   links:[["Montalcino Wine Tours","https://www.montalcinowinetours.com/private-tours/experience-val-dorcia-tour/"]]},
  {t:"Florencia con guía · Uffizi / Academia (David)",chip:"cupos por hora",meta:"Entradas con reserva + guía. Llegada en tren desde Siena.",price:"Entradas + guía según grupo",
   links:[["GetYourGuide","https://www.getyourguide.com/florence-l32/"],["Viator","https://www.viator.com/Florence/d519"]]}
@@ -611,16 +612,16 @@ const toursTos=[
 const checklist=[
  "Reservar hospedaje en Roma (Prati: tranquilo, cerca del Vaticano y metro) en tu site preferido",
  "Reservar hospedaje en Toscana (Val d'Elsa / cerca de Siena, con parqueo) en tu site preferido",
- "Reservar van 8–9 plazas automática + anotar 2 conductores",
+ "Reservar trenes (Roma–Toscana, Florencia, Pisa/Lucca) y tour de la Val d'Orcia",
  "Comprar entradas: Vaticano, Coliseo y Uffizi/Academia",
- "Fijar fechas exactas y comprar vuelos SJU–FCO",
+ "Comprar vuelos SJU–FCO (25 sep · regreso 5 oct)",
  "Decidir tours (combo Roma · Val d'Orcia · Chianti) y cotizar",
  "Confirmar cuna/trona en el agriturismo y silla de auto",
  "Decidir si se duerme cerca de FCO la última noche"
 ];
 const pnotes=[
- {h:"Van",d:"Una 8–9 plazas automática es más cara y escasa: resérvala temprano y anota dos conductores."},
- {h:"ZTL",d:"No entres con la van a los centros de Roma, Florencia, Siena ni Pisa (multas por cámara). Usa tren o parquea en las afueras."},
+ {h:"Trenes",d:"Compra regionales en Trenitalia/Italo y valida el billete regional antes de subir; los trenes rápidos Roma–Florencia ahorran tiempo."},
+ {h:"Última milla",d:"San Gimignano y la Val d'Orcia no tienen tren: llega en bus desde Poggibonsi o con un tour/transfer. Basarse cerca de una estación (Florencia, Siena o Poggibonsi) lo simplifica todo."},
  {h:"Ritmo seniors y bebé",d:"Un solo tramo fuerte por día, con siesta al mediodía. Entradas con hora para no hacer filas de pie."},
  {h:"Bebé de 2 años",d:"Muchos agriturismos prestan cuna y trona — pídelo al reservar. Lleva o alquila silla de auto homologada."},
  {h:"Termas",d:"Bagno Vignoni y los baños libres de la zona son un plus relajante para los mayores."},
@@ -658,13 +659,11 @@ dayData.forEach((d,idx)=>{
    const glyph=stay.kind==='flight'?'✈':'☾';
    const out=stay.out?`<span class="ev out">Check-out ${stay.out} · antes 10:00</span>`:'';
    const cin=stay.in?`<span class="ev in">Check-in ${stay.in} · desde 15:00</span>`:'';
-   const vpick=stay.vanPick?`<span class="ev van">Recogida van · ${stay.vanPick}${stay.vanPickT?' · '+stay.vanPickT:''}</span>`:'';
-   const vdrop=stay.vanDrop?`<span class="ev van">Entrega van · ${stay.vanDrop}${stay.vanDropT?' · '+stay.vanDropT:''}</span>`:'';
-   stayHtml=`<div class="stay" style="--sc:${sc}"><span class="bed">${glyph}</span><span class="where">${stay.where}</span>${out}${vpick}${cin}${vdrop}</div>`;
+   stayHtml=`<div class="stay" style="--sc:${sc}"><span class="bed">${glyph}</span><span class="where">${stay.where}</span>${out}${cin}</div>`;
  }
  el.innerHTML=`
   <button class="day-head" aria-expanded="false" aria-controls="db${idx}">
-    <span class="n">DÍA ${d.n}</span>
+    <span class="n">DÍA ${d.n}${d.date?`<span class="dt">${d.date}</span>`:''}</span>
     <img class="thumb" loading="lazy" src="${d.imgs[0][0]}" alt="">
     <span class="ttl"><span class="t">${d.t}</span><br><span class="s">${d.s}</span></span>
     <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
