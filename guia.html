@@ -6,121 +6,108 @@
 <title>Italia in famiglia — Guía visual del viaje</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --sangiovese:#93301F; --sangiovese-deep:#6E2113; --mosto:#D29A3A;
-    --oliva:#4A6741; --papel:#F5EEDF; --crema:#FFFDF8; --ink:#2B211C;
-  }
+  :root{--paper:#FBF7EF;--ink:#22201B;--rosso:#93301F;--ocra:#C4863B;--cipresso:#4A6741;--line:#DCD2BE;--muted:#8A7E6A;
+        --oliva:#4A6741;--sangiovese:#93301F;--mosto:#C4863B;--crema:#FBF7EF;--papel:#FBF7EF}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--papel);color:var(--ink);font-family:'Source Sans 3',sans-serif;line-height:1.55}
-  .wrap{max-width:760px;margin:0 auto;padding:0 18px}
-  header{background:var(--sangiovese);color:var(--papel);padding:56px 0 44px;position:relative;overflow:hidden}
-  header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;
-    background:repeating-linear-gradient(90deg,#008C45 0 46px,#F4F5F0 46px 92px,#CD212A 92px 138px)}
-  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:#F2C878;font-weight:700;margin-bottom:14px}
-  h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(2.6rem,9vw,4.2rem);line-height:1.02;letter-spacing:-.01em}
-  h1 em{font-style:italic;font-weight:500;color:#F2C878}
-  .hero-meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;color:#F4E6D8}
-  .hero-meta span b{color:#fff;font-weight:600}
-  .hero-note{margin-top:14px;font-size:.8rem;color:#EDD3C6;font-style:italic}
-  section{padding:38px 0 8px}
-  .sec-label{font-family:'Fraunces',serif;font-weight:700;font-size:1.5rem;color:var(--sangiovese);margin-bottom:4px}
-  .sec-sub{font-size:.9rem;color:#6B5A50;margin-bottom:18px}
-  .events{display:grid;grid-template-columns:1fr;gap:14px}
-  @media(min-width:560px){.events{grid-template-columns:1fr 1fr}}
-  .event{background:var(--crema);border-left:5px solid var(--mosto);padding:18px 18px 16px;border-radius:0 10px 10px 0;box-shadow:0 2px 10px rgba(42,29,32,.07)}
-  .event.opera{border-left-color:var(--sangiovese)}
-  .event .tag{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--oliva)}
-  .event h3{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:500;margin:6px 0 6px;color:var(--ink)}
-  .event p{font-size:.9rem;color:#4E4038}
-  #map{height:420px;border-radius:12px;box-shadow:0 3px 14px rgba(42,29,32,.14);z-index:0}
-  .legend{display:flex;gap:18px;margin-top:10px;font-size:.82rem;color:#4E4038;flex-wrap:wrap}
-  .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-  .bloque{background:var(--crema);border-radius:14px;overflow:hidden;box-shadow:0 3px 14px rgba(42,29,32,.09);margin-bottom:26px}
-  .bloque-head{padding:20px 20px 6px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-  .bloque-head h3{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:500}
-  .bloque-head .noches{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
-  .bloque.fl .bloque-head h3{color:var(--oliva)} .bloque.fl .noches{color:var(--oliva)}
-  .bloque.rm .bloque-head h3{color:var(--sangiovese)} .bloque.rm .noches{color:var(--sangiovese)}
-  .fotos{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:12px 12px 4px}
-  .fotos .foto:nth-child(5){grid-column:1/-1;aspect-ratio:21/9}
-  .foto{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:linear-gradient(140deg,var(--oliva),var(--sangiovese));cursor:zoom-in}
-  .foto img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
-  .foto:hover img,.foto:focus-visible img{transform:scale(1.05)}
-  .foto:focus-visible{outline:3px solid var(--mosto);outline-offset:2px}
-  .foto figcaption{position:absolute;left:0;right:0;bottom:0;padding:20px 10px 8px;font-size:.75rem;font-weight:600;color:#fff;
-    background:linear-gradient(transparent,rgba(20,10,14,.75));display:flex;justify-content:space-between;align-items:flex-end;gap:6px}
-  .foto .zoom{font-size:.95rem;opacity:.85}
-  .dias{padding:14px 20px 20px}
-  .dia{display:flex;gap:12px;padding:13px 0;border-top:1px dashed #DACFBC;font-size:.92rem}
-  .dia:first-child{border-top:none}
-  .dia .col{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px}
-  .dia .fecha{font-size:.6rem;font-weight:700;letter-spacing:.05em;color:#9A8878}
-  .dia .chip{font-weight:700;font-size:.72rem;letter-spacing:.06em;color:var(--papel);background:var(--oliva);
-    border-radius:20px;padding:3px 10px;height:fit-content;margin-top:2px}
-  .bloque.rm .dia .chip{background:var(--sangiovese)}
-  .dia .txt b{font-weight:600;font-family:'Fraunces',serif;font-size:1.02rem}
-  .dia .estrella{color:var(--mosto);font-weight:700;font-family:'Fraunces',serif;font-size:1.02rem}
-  .transporte{font-size:.78rem;color:#7A6A5E;margin-top:6px}
-  .horas{margin:9px 0 2px;list-style:none;border-left:2px solid #E4D8C2;padding-left:12px}
-  .horas li{font-size:.82rem;padding:2.5px 0;color:#4E4038}
-  .horas li b{font-variant-numeric:tabular-nums;color:var(--sangiovese);font-weight:700;margin-right:9px}
-  .extra{font-size:.82rem;color:#4A6741;margin-top:6px;background:#F0EAD8;border-radius:8px;padding:7px 10px}
-  .tren{display:flex;align-items:center;gap:12px;margin:6px 0 26px;color:var(--sangiovese);font-size:.88rem;font-weight:600}
-  .tren::before,.tren::after{content:"";flex:1;border-top:2px dashed var(--mosto)}
-  .bud{background:var(--crema);border-radius:14px;padding:20px;box-shadow:0 3px 14px rgba(42,29,32,.09)}
-  .bar-row{margin-bottom:14px}
-  .bar-row .lbl{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:5px}
-  .bar{height:14px;background:#EDE3D1;border-radius:8px;position:relative;overflow:visible}
-  .bar .fill{height:100%;border-radius:8px}
-  .bar .limite{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--ink)}
-  .bud-note{font-size:.8rem;color:#6B5A50;margin-top:8px}
+  body{background:var(--paper);color:var(--ink);font-family:'Source Sans 3',sans-serif;line-height:1.65;font-size:1rem;counter-reset:sec}
+  .wrap{max-width:720px;margin:0 auto;padding:0 22px}
+  header{padding:54px 0 0;text-align:center}
+  .eyebrow{font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:14px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(3rem,12vw,5.4rem);line-height:1.02;letter-spacing:.02em}
+  h1 em{font-style:italic;color:var(--rosso)}
+  .hero-meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;font-size:.8rem;color:#5C5546}
+  .hero-meta b{color:var(--ink)}
+  .hero-note{margin-top:10px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--rosso)}
+  .navlink{display:inline-block;margin-top:16px;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--rosso);text-decoration:none;border-bottom:1px solid var(--ocra);padding-bottom:2px;font-weight:700}
+  header::after{content:"";display:block;height:3px;margin-top:36px;background:repeating-linear-gradient(90deg,#008C45 0 60px,#F4F5F0 60px 120px,#CD212A 120px 180px)}
+  section{padding:36px 0 6px}
+  .sec-label{font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rosso);font-weight:600}
+  .sec-label::before{counter-increment:sec;content:counter(sec,decimal-leading-zero) " · "}
+  .sec-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08rem;color:#5C5546;margin:6px 0 16px}
+  .events .event{border-top:1px solid var(--line);padding:14px 0}
+  .event .tag{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ocra);font-weight:700}
+  .event.opera .tag{color:var(--rosso)}
+  .event h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.5rem;margin:4px 0 6px}
+  .event p{font-size:.92rem;color:#3A362E}
+  #map{height:420px;margin:12px 0 6px;filter:saturate(.85)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.72rem;color:#6B6252;margin-top:6px}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+  .bloque{margin-top:22px}
+  .bloque-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+  .bloque-head h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.8rem}
+  .bloque.fl .bloque-head h3{color:var(--cipresso)}
+  .bloque.rm .bloque-head h3{color:var(--rosso)}
+  .noches{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .fotos{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+  .foto{margin:0;cursor:zoom-in}
+  .foto img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+  .foto figcaption{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 0 0;text-align:right}
+  .foto .zoom{display:none}
+  .foto:focus-visible{outline:2px solid var(--ocra);outline-offset:3px}
+  .dia{display:grid;grid-template-columns:92px 1fr;gap:14px;border-top:1px solid var(--line);padding:14px 0}
+  .col{display:flex;flex-direction:column;gap:2px}
+  .chip{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--rosso);line-height:1.1}
+  .bloque.fl .chip{color:var(--cipresso)}
+  .fecha{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .txt{font-size:.95rem;color:#3A362E}
+  .txt b{color:var(--ink)}
+  .estrella{font-weight:700;color:var(--rosso)}
+  .horas{list-style:none;margin:10px 0 0;padding:0}
+  .horas li{font-size:.85rem;color:#4E463C;padding:3px 0;border-top:1px dotted var(--line)}
+  .horas li b{color:var(--rosso);font-variant-numeric:tabular-nums;margin-right:8px;font-weight:600}
+  .bloque.fl .horas li b{color:var(--cipresso)}
+  .transporte{margin-top:10px;font-size:.8rem;color:#5C5546;border-left:2px solid var(--ocra);padding-left:10px}
+  .extra{margin-top:8px;font-size:.8rem;color:#5C5546;border-left:2px solid var(--line);padding-left:10px}
+  .tren{margin:26px 0;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--rosso);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 0;font-size:1.02rem}
   .gastro{list-style:none;margin:0;padding:0}
-  .gastro li{font-size:.88rem;padding:6px 0;border-top:1px dashed #E4D8C2;color:#4E4038}
-  .gastro li:first-child{border-top:none}
-  .gastro li>b:first-child{color:var(--sangiovese)}
-  .resv{background:var(--crema);border-radius:14px;overflow:hidden;box-shadow:0 3px 14px rgba(42,29,32,.09);margin-bottom:16px}
-  .resv .rimg{position:relative;height:170px;overflow:hidden}
-  .resv .rimg img{width:100%;height:100%;object-fit:cover}
-  .resv .rimg .zona{position:absolute;top:10px;right:10px;background:rgba(20,10,14,.72);color:#fff;font-size:.66rem;
-    letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:4px 9px;border-radius:20px}
-  .resv .rbody{padding:16px 18px 18px}
-  .resv h4{font-family:'Fraunces',serif;font-weight:500;font-size:1.2rem;margin-bottom:4px}
-  .resv .rmeta{font-size:.84rem;color:#6B5A50;margin-bottom:4px}
-  .resv .rprice{font-size:1rem;margin:6px 0 12px}
-  .resv .rprice b{color:var(--sangiovese);font-size:1.15rem}
-  .resv .badge{display:inline-block;background:#EFE6D2;color:var(--oliva);font-weight:700;font-size:.72rem;
-    border-radius:6px;padding:2px 8px;margin-left:6px;vertical-align:2px}
-  .btn{display:inline-block;background:#A06A1C;color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;
-    padding:10px 18px;border-radius:8px}
-  .btn:hover{background:#875816}
-  .btn.vino{background:var(--sangiovese)} .btn.vino:hover{background:#7A2517}
-  .tblwrap{margin-top:18px}
-  .tbl{width:100%;border-collapse:collapse;font-size:.84rem}
-  .tbl th{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:#8A796C;text-align:left;padding:4px}
-  .tbl td{padding:6px 4px;border-top:1px dashed #E4D8C2;color:#4E4038;vertical-align:top}
-  .tbl td .calc{display:block;font-size:.72rem;color:#9A8878}
+  .gastro li{font-size:.9rem;padding:8px 0;border-top:1px solid var(--line);color:#3A362E}
+  .gastro li>b:first-child{color:var(--rosso)}
+  .bud{margin-top:10px}
+  .bud h3{font-family:'Cormorant Garamond',serif !important;font-weight:500 !important}
+  .bar-row{margin:12px 0}
+  .lbl{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;color:#5C5546;margin-bottom:4px}
+  .bar{height:8px;background:#EFE7D6;position:relative}
+  .fill{height:100%}
+  .limite{position:absolute;top:-3px;width:2px;height:14px;background:var(--ink)}
+  .bud-note{font-size:.78rem;color:var(--muted);margin-top:10px}
+  .tblwrap{margin-top:16px}
+  .tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+  .tbl th{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:left;padding:4px}
+  .tbl td{padding:7px 4px;border-top:1px solid var(--line);color:#3A362E;vertical-align:top}
+  .tbl td .calc{display:block;font-size:.7rem;color:var(--muted)}
   .tbl td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .tbl tr.tot td{font-weight:700;background:#F4EDDD;border-top:2px solid var(--mosto)}
-  .tblh{font-family:'Fraunces',serif;font-weight:500;font-size:1.1rem;margin:20px 0 4px}
-  .tblh.fl{color:var(--oliva)} .tblh.rm{color:var(--sangiovese)} .tblh.sh{color:var(--ink)}
-  .rnote{font-size:.78rem;color:#8A796C;margin-top:8px}
-  .pend{background:var(--sangiovese);color:var(--papel);border-radius:14px;padding:22px;margin:10px 0 50px}
-  .pend h3{font-family:'Fraunces',serif;font-weight:500;font-size:1.3rem;margin-bottom:10px;color:#F2C878}
-  .pend li{margin-left:20px;font-size:.94rem;padding:3px 0}
-  footer{padding:0 0 40px;text-align:center;font-size:.75rem;color:#8A796C}
-  #lb{position:fixed;inset:0;background:rgba(20,10,14,.94);display:none;z-index:1000;flex-direction:column;
-    align-items:center;justify-content:center;padding:20px}
+  .tbl tr.tot td{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;border-top:2px solid var(--ink);background:none}
+  .tblh{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.4rem;margin:22px 0 2px}
+  .tblh.fl{color:var(--cipresso)} .tblh.rm{color:var(--rosso)} .tblh.sh{color:var(--ink)}
+  .resv{border-top:1px solid var(--line);padding:16px 0;overflow:hidden}
+  .resv .rimg{float:left;width:96px;height:96px;margin:0 14px 6px 0;position:relative;overflow:hidden}
+  .resv .rimg img{width:100%;height:100%;object-fit:cover}
+  .resv .rimg .zona{position:absolute;bottom:0;left:0;right:0;background:rgba(20,16,12,.72);color:#fff;font-size:.5rem;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:2px 0}
+  .resv h4{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.3rem}
+  .rmeta{font-size:.82rem;color:#5C5546;margin:3px 0}
+  .rprice{margin:6px 0 8px;font-size:.95rem}
+  .rprice b{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--rosso)}
+  .badge{display:inline-block;font-size:.66rem;letter-spacing:.04em;color:var(--cipresso);border:1px solid var(--cipresso);padding:1px 8px;margin:2px 0 0 6px;vertical-align:1px}
+  .btn{display:inline-block;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rosso);text-decoration:none;border-bottom:1px solid var(--ocra);padding-bottom:2px;font-weight:700;margin:6px 14px 0 0;background:none}
+  .btn.vino{color:var(--rosso)}
+  .rnote{font-size:.78rem;color:var(--muted);margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .pend{border-top:2px solid var(--ink);padding:16px 0;margin-top:8px}
+  .pend h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.55rem;color:var(--rosso);margin-bottom:8px}
+  .pend ul{list-style:none;padding:0;margin:0}
+  .pend li{font-size:.9rem;color:#3A362E;padding:6px 0;border-top:1px dotted var(--line)}
+  footer{text-align:center;padding:28px 0 60px;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  footer a{color:var(--rosso);text-decoration:none;border-bottom:1px solid var(--ocra)}
+  #lb{position:fixed;inset:0;background:rgba(20,16,12,.95);display:none;z-index:1000;flex-direction:column;align-items:center;justify-content:center;padding:20px}
   #lb.open{display:flex}
-  #lb img{max-width:100%;max-height:82vh;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
-  #lb .cap{color:var(--papel);font-size:.95rem;margin-top:14px;text-align:center;font-family:'Fraunces',serif;font-style:italic}
-  #lb .close{position:absolute;top:14px;right:16px;background:none;border:2px solid rgba(255,255,255,.5);color:#fff;
-    width:42px;height:42px;border-radius:50%;font-size:1.2rem;cursor:pointer}
-  #lb .close:hover{border-color:var(--mosto);color:var(--mosto)}
-  .fade{opacity:0;transform:translateY(10px);animation:up .7s ease forwards}
+  #lb img{max-width:100%;max-height:82vh}
+  #lb .cap{color:var(--paper);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;margin-top:12px}
+  #lb .close{position:absolute;top:14px;right:16px;background:none;border:1px solid rgba(255,255,255,.5);color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+  .fade{opacity:0;transform:translateY(8px);animation:up .8s ease forwards}
   @keyframes up{to{opacity:1;transform:none}}
-  @media(prefers-reduced-motion:reduce){.fade{animation:none;opacity:1;transform:none}.foto img{transition:none}}
+  @media(prefers-reduced-motion:reduce){.fade{animation:none;opacity:1;transform:none}}
+  @media(max-width:480px){.dia{grid-template-columns:74px 1fr;gap:10px}}
 </style>
 </head>
 <body>
@@ -136,6 +123,7 @@
       <span>otoño toscano: <b>oro, cobre y trufa</b></span>
     </div>
     <div class="hero-note">Ritmo lento, cero backtracking, y una niña de 2 años marcando el paso.</div>
+    <div><a class="navlink" href="index.html">Ver la propuesta ↗</a></div>
   </div>
 </header>
 
@@ -223,7 +211,7 @@
     <div class="sec-sub">Alineada al itinerario: cada pick queda cerca de donde estarán ese día. Truco de oro con este grupo: cenar a las 19:30 (apertura) — restaurantes tranquilos y personal atento. Instituciones de décadas, pero verificar horarios/reserva antes de ir.</div>
 
     <div class="bud" style="margin-bottom:18px">
-      <h3 style="font-family:'Fraunces',serif;font-weight:500;color:var(--oliva);margin-bottom:10px">Florencia &amp; Toscana</h3>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-weight:500;color:var(--oliva);margin-bottom:10px">Florencia &amp; Toscana</h3>
       <ul class="gastro">
         <li><b>D1</b> Cena de llegada cerca de San Marco: <b>Trattoria Mario</b> queda al lado (solo almuerzo — para otro día) → esta noche: <b>Za' Za'</b> junto al Mercato</li>
         <li><b>D2</b> En Pisa: <b>Osteria dei Cavalieri</b> (clásica)</li>
@@ -236,7 +224,7 @@
     </div>
 
     <div class="bud">
-      <h3 style="font-family:'Fraunces',serif;font-weight:500;color:var(--sangiovese);margin-bottom:10px">Roma (base Prati)</h3>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-weight:500;color:var(--sangiovese);margin-bottom:10px">Roma (base Prati)</h3>
       <ul class="gastro">
         <li><b>Del barrio Prati (toda la estadía):</b> <b>Bonci Pizzarium</b> a 5 min de 94Rooms · gelato de <b>Gelateria dei Gracchi</b> · <b>Sciascia Caffè</b> para el espresso histórico</li>
         <li><b>D8</b> Cena tranquila en Prati: <b>Il Sorpasso</b> (o temprano si hay Falstaff)</li>
@@ -315,7 +303,7 @@
   </div>
 </section>
 
-<footer>Archivo de Viaje — Italia 2026 · Fase 2 Plan Maestro · estimados del 2026-07-15 · fotos: Wikimedia Commons</footer>
+<footer>Archivo de Viaje — Italia 2026 · Fase 2 Plan Maestro · estimados del 2026-07-15 · fotos: Wikimedia Commons · <a href="index.html">Propuesta</a></footer>
 
 <div id="lb" role="dialog" aria-modal="true" aria-label="Foto ampliada">
   <button class="close" aria-label="Cerrar">✕</button>
@@ -326,7 +314,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
   const map = L.map('map', {scrollWheelZoom:false}).setView([42.75, 11.9], 7);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     attribution:'&copy; OpenStreetMap', maxZoom:18
   }).addTo(map);
   const dot = (color, star=false) => L.divIcon({
